@@ -1,0 +1,899 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .catalog-header {
+        background-color: #f8f9fa;
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    
+    .main-categories {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .main-category {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1.5rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #333;
+        width: 180px;
+    }
+    
+    .main-category:hover, .main-category.active {
+        background-color: #e91e63;
+        color: white;
+        transform: translateY(-5px);
+    }
+    
+    .main-category i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .main-category h3 {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+    
+    .category-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 3rem;
+    }
+    
+    .category-item {
+        padding: 0.8rem 1.5rem;
+        background-color: white;
+        border-radius: 30px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+    }
+    
+    .category-item:hover, .category-item.active {
+        background-color: #e91e63;
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #4caf50;
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+        .main-categories {
+            gap: 1rem;
+        }
+        
+        .main-category {
+            width: 140px;
+            padding: 1rem;
+        }
+    }
+</style>
+<style>
+    .catalog-header {
+        background-color: #f8f9fa;
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    
+    .category-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        margin-bottom: 3rem;
+    }
+    
+    .category-item {
+        padding: 0.8rem 1.5rem;
+        background-color: white;
+        border-radius: 30px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+    }
+    
+    .category-item:hover, .category-item.active {
+        background-color: #e91e63;
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .product-card {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .product-img-container {
+        height: 250px;
+        overflow: hidden;
+    }
+    
+    .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .product-card:hover .product-img {
+        transform: scale(1.05);
+    }
+    
+    .product-info {
+        padding: 1.5rem;
+    }
+    
+    .product-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+    
+    .product-price {
+        color: #e91e63;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 3rem;
+    }
+    
+    .page-item {
+        margin: 0 0.3rem;
+    }
+    
+    .page-link {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        text-decoration: none;
+        color: #333;
+    }
+    
+    .page-link:hover, .page-item.active .page-link {
+        background-color: #e91e63;
+        color: white;
+    }
+    
+    @media (max-width: 768px) {
+        .products-grid {
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .products-grid {
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .product-img-container {
+            height: 180px;
+        }
+        
+        .product-info {
+            padding: 1rem;
+        }
+    }
+    .price-filter {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.price-filter .form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+</style>
+
+<style>
+    /* Добавляем новые стили для фильтрации */
+    .price-filter {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    
+    .filter-header {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .filter-header i {
+        color: #e91e63;
+        font-size: 1.3rem;
+    }
+    
+    .filter-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #333;
+    }
+    
+    .price-inputs {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .price-field {
+        position: relative;
+    }
+    
+    .price-field label {
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        background: white;
+        padding: 0 5px;
+        font-size: 0.8rem;
+        color: #666;
+    }
+    
+    .price-input {
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        padding: 0.8rem 1.5rem;
+        width: 120px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .price-input:focus {
+        border-color: #e91e63;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+    }
+    
+    .price-separator {
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-left: auto;
+    }
+    
+    .filter-btn {
+        background-color: #e91e63;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.5rem;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-btn:hover {
+        background-color: #d81b60;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .filter-btn.reset {
+        background-color: #f5f5f5;
+        color: #666;
+    }
+    
+    .filter-btn.reset:hover {
+        background-color: #eee;
+    }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+        .price-filter {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+        
+        .filter-buttons {
+            margin-left: 0;
+            justify-content: center;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .price-inputs {
+            flex-wrap: wrap;
+        }
+        
+        .price-field {
+            flex: 1 0 100%;
+        }
+        
+        .price-separator {
+            display: none;
+        }
+    }
+</style>
+
+<style>
+    /* Стили для фильтра с ползунками */
+    .price-filter {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .filter-header {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .filter-header i {
+        color: #e91e63;
+        font-size: 1.3rem;
+    }
+    
+    .filter-header h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #333;
+    }
+    
+    .slider-container {
+        position: relative;
+        height: 50px;
+        margin-bottom: 2rem;
+    }
+    
+    .slider {
+        position: relative;
+        height: 5px;
+        background: #e0e0e0;
+        border-radius: 5px;
+        margin: 20px 0;
+    }
+    
+    .slider .progress {
+        position: absolute;
+        height: 5px;
+        background: #e91e63;
+        border-radius: 5px;
+        left: 25%;
+        right: 25%;
+    }
+    
+    .range-input {
+        position: relative;
+    }
+    
+    .range-input input {
+        position: absolute;
+        top: -5px;
+        height: 5px;
+        width: 100%;
+        background: none;
+        pointer-events: none;
+        -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-webkit-slider-thumb {
+        pointer-events: auto;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #e91e63;
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        cursor: pointer;
+        -webkit-appearance: none;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+        pointer-events: auto;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #e91e63;
+        border: 3px solid white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        cursor: pointer;
+        -moz-appearance: none;
+    }
+    
+    .price-inputs {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .price-field {
+        position: relative;
+        flex: 1;
+    }
+    
+    .price-field label {
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        background: white;
+        padding: 0 5px;
+        font-size: 0.8rem;
+        color: #666;
+    }
+    
+    .price-input {
+        border: 2px solid #e0e0e0;
+        border-radius: 30px;
+        padding: 0.8rem 1.5rem;
+        width: 100%;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .price-input:focus {
+        border-color: #e91e63;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+    }
+    
+    .price-separator {
+        color: #666;
+        font-weight: 500;
+        flex: 0 0 auto;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .filter-btn {
+        background-color: #e91e63;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.5rem;
+        border-radius: 30px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .filter-btn:hover {
+        background-color: #d81b60;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .filter-btn.reset {
+        background-color: #f5f5f5;
+        color: #666;
+    }
+    
+    .filter-btn.reset:hover {
+        background-color: #eee;
+    }
+    
+    .price-values {
+        display: flex;
+        justify-content: space-between;
+        margin-top: -10px;
+        font-size: 0.9rem;
+        color: #666;
+    }
+</style>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="catalog-header">
+    <div class="container">
+        <h1>Каталог товаров</h1>
+        <p>Выберите понравившиеся товары</p>
+    </div>
+</section>
+
+<div class="container">
+    <!-- Основные категории -->
+ <!-- Основные категории -->
+<div class="main-categories">
+    <a href="{% url 'catalog' %}" class="main-category {% if not main_category %}active{% endif %}">
+        <i class="fas fa-star"></i>
+        <h3>Все товары</h3>
+    </a>
+    {% for main_cat in main_categories %}
+    <a href="{% url 'catalog_by_main_category' main_cat.slug %}" 
+       class="main-category {% if main_category == main_cat %}active{% endif %}">
+        <i class="{{ main_cat.icon }}"></i>
+        <h3>{{ main_cat.name }}</h3>
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Подкатегории -->
+{% if main_category %}
+<div class="category-list">
+    <a href="{% url 'catalog_by_main_category' main_category.slug %}" 
+       class="category-item {% if not category %}active{% endif %}">
+        Все {{ main_category.name }}
+    </a>
+    {% for cat in categories %}
+    <a href="{% url 'catalog_by_category' main_category.slug cat.slug %}" 
+       class="category-item {% if category == cat %}active{% endif %}">
+        {{ cat.name }}
+    </a>
+    {% endfor %}
+</div>
+{% endif %}
+    <!-- Фильтр по ценам с ползунками -->
+<!-- Фильтр по ценам с ползунками -->
+{% with min_range=min_price_range.min|default:0 max_range=min_price_range.max|default:10000 %}
+<div class="price-filter">
+    <div class="filter-header">
+        <i class="fas fa-filter"></i>
+        <h3>Фильтр по цене</h3>
+    </div>
+    
+    <form method="GET" class="price-filter-form" id="priceFilterForm">
+        <!-- Ползунки -->
+        <div class="slider-container">
+            <div class="slider">
+                <div class="progress" id="sliderProgress"></div>
+            </div>
+            <div class="range-input">
+                <input type="range" min="{{ min_range }}" max="{{ max_range }}" 
+                       value="{{ request.GET.min_price|default:min_range }}" 
+                       id="minRange">
+                <input type="range" min="{{ min_range }}" max="{{ max_range }}" 
+                       value="{{ request.GET.max_price|default:max_range }}" 
+                       id="maxRange">
+            </div>
+            <div class="price-values">
+                <span>{{ min_range }} сом</span>
+                <span>{{ max_range }} сом</span>
+            </div>
+        </div>
+        
+        <!-- Поля ввода -->
+        <div class="price-inputs">
+            <div class="price-field">
+                <label for="min_price">от</label>
+                <input type="number" class="price-input" id="min_price" name="min_price" 
+                       value="{{ request.GET.min_price|default:min_range }}">
+            </div>
+            <div class="price-separator">—</div>
+            <div class="price-field">
+                <label for="max_price">до</label>
+                <input type="number" class="price-input" id="max_price" name="max_price" 
+                       value="{{ request.GET.max_price|default:max_range }}">
+            </div>
+        </div>
+        
+        <div class="filter-buttons">
+            <button type="submit" class="filter-btn">
+                <i class="fas fa-check"></i> Применить
+            </button>
+            {% if request.GET.min_price or request.GET.max_price %}
+                <a href="." class="filter-btn reset">
+                    <i class="fas fa-times"></i> Сбросить
+                </a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endwith %}
+   <!-- Фильтр по ценам -->
+<!-- Фильтр по ценам -->
+
+    <!-- Сетка товаров -->
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <div class="product-badge">
+                {{ product.get_product_type_display }}
+            </div>
+            <a href="{% url 'product_detail' product.id product.slug %}">
+                <div class="product-img-container">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+                </div>
+                <div class="product-info">
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <div class="product-price">{{ product.price }} сом</div>
+                    <button class="btn">Подробнее</button>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <p>Товары в этой категории отсутствуют</p>
+        {% endfor %}
+    </div>
+     <!-- Пагинация -->
+     {% if products.paginator.num_pages > 1 %}
+     <div class="pagination">
+         {% if products.has_previous %}
+         <div class="page-item">
+             <a href="?page=1" class="page-link">&laquo; первая</a>
+         </div>
+         <div class="page-item">
+             <a href="?page={{ products.previous_page_number }}" class="page-link">предыдущая</a>
+         </div>
+         {% endif %}
+         
+         {% for num in products.paginator.page_range %}
+         {% if products.number == num %}
+         <div class="page-item active">
+             <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+         </div>
+         {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+         <div class="page-item">
+             <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+         </div>
+         {% endif %}
+         {% endfor %}
+         
+         {% if products.has_next %}
+         <div class="page-item">
+             <a href="?page={{ products.next_page_number }}" class="page-link">следующая</a>
+         </div>
+         <div class="page-item">
+             <a href="?page={{ products.paginator.num_pages }}" class="page-link">последняя &raquo;</a>
+         </div>
+         {% endif %}
+     </div>
+     {% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const minRange = document.getElementById('minRange');
+    const maxRange = document.getElementById('maxRange');
+    const minPrice = document.getElementById('min_price');
+    const maxPrice = document.getElementById('max_price');
+    const sliderProgress = document.getElementById('sliderProgress');
+    
+    // Проверка существования элементов
+    if (!minRange || !maxRange || !minPrice || !maxPrice || !sliderProgress) {
+        console.error('One or more filter elements are missing');
+        return;
+    }
+    
+    // Установка начальных значений
+    function updateValues() {
+        minPrice.value = minRange.value;
+        maxPrice.value = maxRange.value;
+        updateProgress();
+    }
+    
+    // Обновление прогресс-бара
+    function updateProgress() {
+        try {
+            const minVal = parseInt(minRange.value);
+            const maxVal = parseInt(maxRange.value);
+            const minMax = parseInt(minRange.max);
+            
+            if (isNaN(minVal) || isNaN(maxVal) || isNaN(minMax)) {
+                console.error('Invalid slider values');
+                return;
+            }
+            
+            const minPercent = (minVal / minMax) * 100;
+            const maxPercent = (maxVal / minMax) * 100;
+            sliderProgress.style.left = minPercent + "%";
+            sliderProgress.style.right = (100 - maxPercent) + "%";
+        } catch (e) {
+            console.error('Error updating progress bar:', e);
+        }
+    }
+    
+    // Синхронизация ползунков и полей ввода
+    minRange.addEventListener('input', function() {
+        if (parseInt(minRange.value) > parseInt(maxRange.value)) {
+            minRange.value = maxRange.value;
+        }
+        updateValues();
+    });
+    
+    maxRange.addEventListener('input', function() {
+        if (parseInt(maxRange.value) < parseInt(minRange.value)) {
+            maxRange.value = minRange.value;
+        }
+        updateValues();
+    });
+    
+    minPrice.addEventListener('change', function() {
+        minRange.value = this.value;
+        if (parseInt(minPrice.value) > parseInt(maxPrice.value)) {
+            minPrice.value = maxPrice.value;
+        }
+        updateValues();
+    });
+    
+    maxPrice.addEventListener('change', function() {
+        maxRange.value = this.value;
+        if (parseInt(maxPrice.value) < parseInt(minPrice.value)) {
+            maxPrice.value = minPrice.value;
+        }
+        updateValues();
+    });
+    
+    // Инициализация
+    updateValues();
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const minRange = document.getElementById('minRange');
+    const maxRange = document.getElementById('maxRange');
+    const minPrice = document.getElementById('min_price');
+    const maxPrice = document.getElementById('max_price');
+    const sliderProgress = document.getElementById('sliderProgress');
+    const form = document.getElementById('priceFilterForm');
+    
+    // Установка начальных значений
+    function updateValues() {
+        minPrice.value = minRange.value;
+        maxPrice.value = maxRange.value;
+        updateProgress();
+    }
+    
+    // Обновление прогресс-бара
+    function updateProgress() {
+        const minVal = parseInt(minRange.value);
+        const maxVal = parseInt(maxRange.value);
+        const minPercent = (minVal / minRange.max) * 100;
+        const maxPercent = (maxVal / minRange.max) * 100;
+        sliderProgress.style.left = minPercent + "%";
+        sliderProgress.style.right = (100 - maxPercent) + "%";
+    }
+    
+    // Синхронизация ползунков и полей ввода
+    minRange.addEventListener('input', function() {
+        if (parseInt(minRange.value) > parseInt(maxRange.value)) {
+            minRange.value = maxRange.value;
+        }
+        updateValues();
+    });
+    
+    maxRange.addEventListener('input', function() {
+        if (parseInt(maxRange.value) < parseInt(minRange.value)) {
+            maxRange.value = minRange.value;
+        }
+        updateValues();
+    });
+    
+    minPrice.addEventListener('change', function() {
+        minRange.value = this.value;
+        if (parseInt(minPrice.value) > parseInt(maxPrice.value)) {
+            minPrice.value = maxPrice.value;
+        }
+        updateValues();
+    });
+    
+    maxPrice.addEventListener('change', function() {
+        maxRange.value = this.value;
+        if (parseInt(maxPrice.value) < parseInt(minPrice.value)) {
+            maxPrice.value = minPrice.value;
+        }
+        updateValues();
+    });
+    // Инициализация с проверкой значений
+    function initSlider() {
+        const minVal = parseInt(minRange.value);
+        const maxVal = parseInt(maxRange.value);
+        
+        if (isNaN(minVal)) minRange.value = minRange.min;
+        if (isNaN(maxVal)) maxRange.value = maxRange.max;
+        
+        updateValues();
+    }
+    
+    initSlider();
+    // Инициализация
+    updateValues();
+});
+</script>
+
+     <!-- Пагинация -->
+{% comment %} {% if products.paginator.num_pages > 1 %}
+<div class="pagination">
+    {% if products.has_previous %}
+    <div class="page-item">
+        <a href="?{% query_transform page=1 %}" class="page-link">&laquo; первая</a>
+    </div>
+    <div class="page-item">
+        <a href="?{% query_transform page=products.previous_page_number %}" class="page-link">предыдущая</a>
+    </div>
+    {% endif %}
+    
+    {% for num in products.paginator.page_range %}
+    {% if products.number == num %}
+    <div class="page-item active">
+        <a href="?{% query_transform page=num %}" class="page-link">{{ num }}</a>
+    </div>
+    {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+    <div class="page-item">
+        <a href="?{% query_transform page=num %}" class="page-link">{{ num }}</a>
+    </div>
+    {% endif %}
+    {% endfor %}
+    
+    {% if products.has_next %}
+    <div class="page-item">
+        <a href="?{% query_transform page=products.next_page_number %}" class="page-link">следующая</a>
+    </div>
+    <div class="page-item">
+        <a href="?{% query_transform page=products.paginator.num_pages %}" class="page-link">последняя &raquo;</a>
+    </div>
+    {% endif %}
+</div>
+{% endif %} {% endcomment %}
+    <!-- Пагинация (остается без изменений) -->
+    {% comment %} {% include 'shop/includes/pagination.html' %} {% endcomment %}
+</div>
+{% endblock %}

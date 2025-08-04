@@ -1,0 +1,251 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .product-detail {
+        padding: 3rem 0;
+    }
+    
+    .product-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
+    
+    .product-gallery {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 1rem;
+    }
+    
+    .thumbnail-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .thumbnail {
+        width: 100%;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .thumbnail:hover {
+        transform: scale(1.05);
+    }
+    
+    .main-image {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+    
+    .product-info {
+        padding: 1rem;
+    }
+    
+    .product-title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .product-price {
+        font-size: 1.8rem;
+        color: #e91e63;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+    
+    .product-description {
+        margin-bottom: 2rem;
+        line-height: 1.7;
+    }
+    
+    .add-to-cart {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .quantity-btn {
+        background-color: #f8f9fa;
+        border: none;
+        padding: 0.8rem 1rem;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+    
+    .quantity-input {
+        width: 50px;
+        text-align: center;
+        border: none;
+        border-left: 1px solid #ddd;
+        border-right: 1px solid #ddd;
+        padding: 0.8rem 0;
+    }
+    
+    .related-products {
+        margin-top: 5rem;
+    }
+    
+    .related-title {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    @media (max-width: 992px) {
+        .product-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .main-image {
+            height: 400px;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .product-gallery {
+            grid-template-columns: 1fr;
+        }
+        
+        .thumbnail-list {
+            flex-direction: row;
+            order: 2;
+        }
+        
+        .thumbnail {
+            height: 60px;
+            width: 60px;
+        }
+        
+        .main-image {
+            height: 300px;
+            order: 1;
+        }
+        
+        .product-title {
+            font-size: 1.5rem;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="container">
+        <div class="product-container">
+            <!-- Галерея товара -->
+            <div class="product-gallery">
+                <div class="thumbnail-list">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="thumbnail active">
+                    <!-- Дополнительные изображения можно добавить здесь -->
+                </div>
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-image" id="mainImage">
+            </div>
+            
+            <!-- Информация о товаре -->
+            <div class="product-info">
+                <h1 class="product-title">{{ product.name }}</h1>
+                <div class="product-price">{{ product.price }} сом</div>
+                
+                <div class="product-description">
+                    {{ product.description|linebreaks }}
+                </div>
+                
+              <form method="post" action="{% url 'add_to_cart' product.id %}" class="add-to-cart">
+    {% csrf_token %}
+    <div class="quantity-selector">
+        <button type="button" class="quantity-btn minus">-</button>
+        <input type="number" name="quantity" value="1" min="1" class="quantity-input">
+        <button type="button" class="quantity-btn plus">+</button>
+    </div>
+    <button type="submit" class="btn">Добавить в корзину</button>
+</form>
+                
+                <div class="product-meta">
+                    <p><strong>Категория:</strong> 
+                        {% comment %} <a href="{% url 'catalog_by_category' product.category.slug %}">
+                            {{ product.category.name }}
+                        </a> {% endcomment %}
+                    </p>
+                    <p><strong>Доступность:</strong> 
+                        {% if product.available %}
+                        <span style="color: green;">В наличии</span>
+                        {% else %}
+                        <span style="color: red;">Нет в наличии</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Похожие товары -->
+        {% if related_products %}
+        <div class="related-products">
+            <h3 class="related-title">Похожие товары</h3>
+            <div class="products-grid">
+                {% for related in related_products %}
+                <div class="product-card">
+                    <a href="{% url 'product_detail' related.id related.slug %}">
+                        <div class="product-img-container">
+                            <img src="{{ related.image.url }}" alt="{{ related.name }}" class="product-img">
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-title">{{ related.name }}</h3>
+                            <div class="product-price">{{ related.price }} сом</div>
+                            <button class="btn">Подробнее</button>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+    // Управление количеством товара
+    document.querySelector('.minus').addEventListener('click', function() {
+        const input = document.querySelector('.quantity-input');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+        }
+    });
+    
+    document.querySelector('.plus').addEventListener('click', function() {
+        const input = document.querySelector('.quantity-input');
+        input.value = parseInt(input.value) + 1;
+    });
+    
+    // Переключение изображений (можно добавить больше функционала при наличии дополнительных изображений)
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    const mainImage = document.getElementById('mainImage');
+    
+    thumbnails.forEach(thumb => {
+        thumb.addEventListener('click', function() {
+            thumbnails.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            mainImage.src = this.src;
+        });
+    });
+</script>
+{% endblock %}

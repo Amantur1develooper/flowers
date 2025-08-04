@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .cart-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .cart-item {
+        display: flex;
+        align-items: center;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .cart-item-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 5px;
+        margin-right: 1.5rem;
+    }
+    
+    .cart-item-details {
+        flex-grow: 1;
+    }
+    
+    .cart-item-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .cart-item-price {
+        font-weight: bold;
+        color: #e91e63;
+    }
+    
+    .cart-item-quantity {
+        display: flex;
+        align-items: center;
+    }
+    
+    .quantity-input {
+        width: 60px;
+        text-align: center;
+        margin: 0 0.5rem;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    .quantity-btn {
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .remove-btn {
+        background-color: #ffebee;
+        color: #c62828;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-left: 1rem;
+    }
+    
+    .cart-summary {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+    }
+    
+    .total-price {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #e91e63;
+    }
+    
+    .checkout-btn {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        background-color: #e91e63;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.1rem;
+        margin-top: 1.5rem;
+        cursor: pointer;
+        text-align: center;
+    }
+    
+    @media (max-width: 768px) {
+        .cart-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .cart-item-image {
+            margin-right: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .cart-item-actions {
+            margin-top: 1rem;
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <h1>Ваша корзина</h1>
+    
+    {% if not cart_items %}
+    <p>Ваша корзина пуста</p>
+    <a href="{% url 'catalog' %}" class="btn">Вернуться к покупкам</a>
+    {% else %}
+    {% for item in cart_items %}
+    <div class="cart-item">
+        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="cart-item-image">
+        
+        <div class="cart-item-details">
+            <h3 class="cart-item-title">{{ item.product.name }}</h3>
+            <p class="cart-item-price">{{ item.product.price }} сом × {{ item.quantity }} = {{ item.total }} сом</p>
+        </div>
+        
+        <div class="cart-item-actions">
+            <form method="post" action="{% url 'update_cart_item' item.product.id %}" class="cart-item-quantity">
+                {% csrf_token %}
+                <button type="button" class="quantity-btn minus" onclick="this.parentNode.querySelector('input[type=number]').stepDown(); this.parentNode.submit()">-</button>
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="quantity-input" onchange="this.parentNode.submit()">
+                <button type="button" class="quantity-btn plus" onclick="this.parentNode.querySelector('input[type=number]').stepUp(); this.parentNode.submit()">+</button>
+            </form>
+            
+            <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
+                {% csrf_token %}
+                <button type="submit" class="remove-btn">Удалить</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <div class="cart-summary">
+        <h2>Итого: <span class="total-price">{{ total_price }} сом</span></h2>
+        <a href="{% url 'checkout' %}" class="checkout-btn">Оформить заказ</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

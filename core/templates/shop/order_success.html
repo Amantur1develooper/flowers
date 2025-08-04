@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin: 3rem auto; text-align: center;">
+    <h1>Спасибо за ваш заказ! 🎉</h1>
+    <p>Мы получили ваш заказ и свяжемся с вами в ближайшее время для подтверждения.</p>
+    {% comment %} <p>Номер вашего заказа: #{{ request.session.get('order_id', '---') }}</p> {% endcomment %}
+    <a href="{% url 'catalog' %}" class="btn" style="margin-top: 2rem;">Вернуться в каталог</a>
+</div>
+{% endblock %}

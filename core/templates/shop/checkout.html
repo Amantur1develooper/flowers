@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .checkout-form {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+    
+    .required-field::after {
+        content: " *";
+        color: #e91e63;
+    }
+    
+    .order-summary {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+    
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .order-total {
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #e91e63;
+        margin-top: 1rem;
+        text-align: right;
+    }
+    
+    .submit-btn {
+        background-color: #e91e63;
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+    }
+    
+    @media (max-width: 768px) {
+        .checkout-container {
+            padding: 0;
+        }
+        
+        .checkout-form {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <h1>Оформление заказа</h1>
+    
+    <div class="order-summary">
+        <h3>Ваш заказ</h3>
+        {% for item in cart_items %}
+        <div class="order-item">
+            <span>{{ item.product.name }} × {{ item.quantity }}</span>
+            <span>{{ item.total }} сом</span>
+        </div>
+        {% endfor %}
+        <div class="order-total">
+            Итого: {{ total_price }} сом
+        </div>
+    </div>
+    
+    <form method="post" class="checkout-form">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="name" class="form-label required-field">ФИО</label>
+            <input type="text" id="name" name="name" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="phone" class="form-label required-field">Телефон</label>
+            <input type="tel" id="phone" name="phone" class="form-control" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" id="email" name="email" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label class="form-label">Способ получения</label>
+            <div>
+                <input type="radio" id="self_pickup" name="delivery_type" value="self_pickup" checked>
+                <label for="self_pickup">Самовывоз</label>
+            </div>
+            <div>
+                <input type="radio" id="delivery" name="delivery_type" value="delivery">
+                <label for="delivery">Доставка</label>
+            </div>
+        </div>
+        
+        <div class="form-group" id="address-field" style="display: none;">
+            <label for="address" class="form-label">Адрес доставки</label>
+            <input type="text" id="address" name="address" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label for="comment" class="form-label">Комментарий к заказу</label>
+            <textarea id="comment" name="comment" class="form-control" rows="3"></textarea>
+        </div>
+        
+        <button type="submit" class="submit-btn">Подтвердить заказ</button>
+    </form>
+</div>
+
+<script>
+    // Показываем поле адреса при выборе доставки
+    document.querySelectorAll('input[name="delivery_type"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            document.getElementById('address-field').style.display = 
+                this.value === 'delivery' ? 'block' : 'none';
+        });
+    });
+</script>
+{% endblock %}

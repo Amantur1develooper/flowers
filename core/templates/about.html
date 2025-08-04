@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://example.com/about-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 400px;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        color: white;
+        margin-bottom: 3rem;
+    }
+    
+    .about-content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .about-section {
+        padding: 3rem 0;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .section-title h2 {
+        font-size: 2rem;
+        position: relative;
+        display: inline-block;
+        padding-bottom: 10px;
+    }
+    
+    .section-title h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background-color: #e91e63;
+    }
+    
+    .about-text {
+        max-width: 800px;
+        margin: 0 auto 3rem;
+        line-height: 1.8;
+        text-align: center;
+    }
+    
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .feature-item {
+        text-align: center;
+        padding: 2rem;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .feature-item:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        color: #e91e63;
+        margin-bottom: 1.5rem;
+    }
+    
+    .team {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+    
+    .team-member {
+        text-align: center;
+    }
+    
+    .team-photo {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 0 auto 1.5rem;
+        border: 5px solid #f8f9fa;
+    }
+    
+    @media (max-width: 768px) {
+        .about-hero {
+            height: 300px;
+        }
+        
+        .section-title h2 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Герой-секция -->
+<section class="about-hero">
+    <div class="about-content">
+        <h1>О нашем магазине</h1>
+        <p>Дарим радость и уют с 2010 года</p>
+    </div>
+</section>
+
+<!-- Основное содержимое -->
+<div class="container">
+    <!-- О компании -->
+    <section class="about-section">
+        <div class="section-title">
+            <h2>Наша история</h2>
+        </div>
+        <div class="about-text">
+            <p>Мы начали наш бизнес в 2010 году с небольшого цветочного магазина в центре Оша. 
+            С тех пор мы выросли в крупную сеть, предлагающую не только прекрасные цветы, 
+            но и уникальные игрушки, а также восхитительные десерты.</p>
+            
+            <p>Наша миссия - дарить людям радость и создавать незабываемые моменты. 
+            Мы тщательно отбираем каждый товар, чтобы гарантировать высочайшее качество 
+            и удовлетворение наших клиентов.</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Качество</h3>
+                <p>Мы работаем только с проверенными поставщиками и используем лучшие материалы</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h3>Опыт</h3>
+                <p>Более 10 лет дарим радость нашим клиентам</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-smile"></i>
+                </div>
+                <h3>Удовольствие</h3>
+                <p>Более 5000 довольных клиентов по всему Ошу</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Наша команда -->
+    <section class="about-section">
+        <div class="section-title">
+            <h2>Наша команда</h2>
+        </div>
+        <div class="about-text">
+            <p>Наши сотрудники - это профессионалы с большим опытом работы, 
+            которые с любовью относятся к своему делу.</p>
+        </div>
+        
+        <div class="team">
+            <div class="team-member">
+                <img src="https://example.com/team1.jpg" alt="Айгуль" class="team-photo">
+                <h3>Айгуль</h3>
+                <p>Основатель и директор</p>
+            </div>
+            
+            <div class="team-member">
+                <img src="https://example.com/team2.jpg" alt="Нурлан" class="team-photo">
+                <h3>Нурлан</h3>
+                <p>Главный флорист</p>
+            </div>
+            
+            <div class="team-member">
+                <img src="https://example.com/team3.jpg" alt="Айпери" class="team-photo">
+                <h3>Айпери</h3>
+                <p>Кондитер</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Наши магазины -->
+    <section class="about-section">
+        <div class="section-title">
+            <h2>Наши магазины</h2>
+        </div>
+        <div class="about-text">
+            <p>Мы рады видеть вас в наших магазинах по всему Ошу. 
+            Каждый магазин имеет уникальную атмосферу и широкий ассортимент товаров.</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h3>Центральный магазин</h3>
+                <p>ул. Ленина, 123<br>Ежедневно с 9:00 до 20:00</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h3>Филиал на юге</h3>
+                <p>ул. Кирова, 45<br>Ежедневно с 9:00 до 19:00</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h3>Филиал на севере</h3>
+                <p>ул. Московская, 67<br>Ежедневно с 10:00 до 18:00</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
