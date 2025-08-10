@@ -1,0 +1,49 @@
+{% load static %}
+
+<header>
+    <div class="container">
+        <div class="header-content">
+            <a href="{% url 'index' %}" class="logo">Цветочная <span>лавка</span></a>
+            
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav>
+                <ul>
+                    <li><a href="{% url 'index' %}">Главная</a></li>
+                    <li><a href="{% url 'catalog' %}">Каталог</a></li>
+                    <li><a href="{% url 'about' %}">О нас</a></li>
+                    <li><a href="{% url 'delivery' %}">Доставка</a></li>
+                    <li><a href="{% url 'contacts' %}">Контакты</a></li>
+                    <li>
+                        <a href="{% url 'cart_detail' %}" class="cart-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                            {% with cart=request.session.cart %}
+                            {% if cart %}
+                            <span class="cart-count">1</span>
+                            {% else %}
+                            <span class="cart-count">0</span>
+                            {% endif %}
+                            {% endwith %}
+                        </a>
+                    </li>
+                    <li><a href="{% url 'account' %}"><i class="fas fa-user"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <ul>
+                <li><a href="{% url 'index' %}">Главная</a></li>
+                <li><a href="{% url 'catalog' %}">Каталог</a></li>
+                <li><a href="{% url 'about' %}">О нас</a></li>
+                <li><a href="{% url 'delivery' %}">Доставка</a></li>
+                <li><a href="{% url 'contacts' %}">Контакты</a></li>
+                <li><a href="{% url 'cart_detail' %}">Корзина (<span class="cart-count">0</span>)</a></li>
+                <li><a href="{% url 'account' %}">Личный кабинет</a></li>
+            </ul>
+        </div>
+    </div>
+</header>

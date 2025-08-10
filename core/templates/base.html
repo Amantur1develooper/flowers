@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Цветочный магазин - Ош{% endblock %}</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"><style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
         :root {
             --primary-color: #e91e63;
             --primary-dark: #c2185b;
@@ -279,54 +280,7 @@
 </head>
 <body>
     <!-- Header -->
-    <header>
-        <div class="container">
-            <div class="header-content">
-                <a href="{% url 'index' %}" class="logo">Цветочная <span>лавка</span></a>
-                
-                <button class="nav-toggle" id="navToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                
-                <nav>
-                    <ul>
-                        <li><a href="{% url 'index' %}">Главная</a></li>
-                        <li><a href="{% url 'catalog' %}">Каталог</a></li>
-                        <li><a href="{% url 'about' %}">О нас</a></li>
-                        <li><a href="{% url 'delivery' %}">Доставка</a></li>
-                        <li><a href="{% url 'contacts' %}">Контакты</a></li>
-                        <li>
-                            <a href="{% url 'cart_detail' %}" class="cart-icon">
-    <i class="fas fa-shopping-cart"></i>
-    {% with cart=request.session.cart %}
-    {% if cart %}
-    <span class="cart-count">1</span>
-    {% else %}
-    <span class="cart-count">0</span>
-    {% endif %}
-    {% endwith %}
-</a>
-                          
-                        </li>
-                        <li><a href="{% url 'account' %}"><i class="fas fa-user"></i></a></li>
-                    </ul>
-                </nav>
-            </div>
-            
-            <!-- Mobile Menu -->
-            <div class="mobile-menu" id="mobileMenu">
-                <ul>
-                    <li><a href="{% url 'index' %}">Главная</a></li>
-                    <li><a href="{% url 'catalog' %}">Каталог</a></li>
-                    <li><a href="{% url 'about' %}">О нас</a></li>
-                    <li><a href="{% url 'delivery' %}">Доставка</a></li>
-                    <li><a href="{% url 'contacts' %}">Контакты</a></li>
-                    <li><a href="{% url 'cart_detail' %}">Корзина (<span class="cart-count">0</span>)</a></li>
-                    <li><a href="{% url 'account' %}">Личный кабинет</a></li>
-                </ul>
-            </div>
-        </div>
-    </header>
+    {% include 'components/header.html' %}
 
     <!-- Main Content -->
     <main>
@@ -334,45 +288,7 @@
     </main>
 
     <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-column">
-                    <h3>Магазин</h3>
-                    <ul>
-                        <li><a href="{% url 'about' %}">О нас</a></li>
-                        <li><a href="{% url 'catalog' %}">Каталог</a></li>
-                        <li><a href="{% url 'delivery' %}">Доставка и оплата</a></li>
-                        <li><a href="#">Акции</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Контакты</h3>
-                    <ul>
-                        <li><i class="fas fa-map-marker-alt"></i> г. Ош, ул. Ленина, 123</li>
-                        <li><i class="fas fa-phone"></i> +996 555 123456</li>
-                        <li><i class="fas fa-envelope"></i> info@flowers-osh.kg</li>
-                        <li><i class="fas fa-clock"></i> Ежедневно 9:00-20:00</li>
-                    </ul>
-                </div>
-                
-                <div class="footer-column">
-                    <h3>Соцсети</h3>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#"><i class="fab fa-whatsapp"></i></a>
-                        <a href="#"><i class="fab fa-telegram"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="copyright">
-                &copy; 2025 Цветочная лавка, Ош. Все права защищены.
-            </div>
-        </div>
-    </footer>
+    {% include 'components/footer.html' %}
 
     <script>
         // Mobile menu toggle

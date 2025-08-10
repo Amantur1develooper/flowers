@@ -5,15 +5,19 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import *
 
+
 class ShopAdmin(admin.ModelAdmin):
     list_display = ('name', 'address', 'phone', 'work_hours')
     search_fields = ('name', 'address', 'phone')
     list_filter = ('name',)
 
+
+# @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug')
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name',)
+
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = (
@@ -109,6 +113,7 @@ class CartAdmin(admin.ModelAdmin):
         return obj.get_total_price()
     get_total_price.short_description = "Общая стоимость"
 
+
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0
@@ -117,6 +122,7 @@ class OrderItemInline(admin.TabularInline):
     def get_cost(self, obj):
         return obj.get_cost()
     get_cost.short_description = "Стоимость"
+
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = (
@@ -132,6 +138,7 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ('created', 'updated')
     list_editable = ('status',)
     date_hierarchy = 'created'
+
 
 class CustomerAdmin(admin.ModelAdmin):
     list_display = (
@@ -151,9 +158,6 @@ admin.site.register(Review, ReviewAdmin)
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(Customer, CustomerAdmin)
-# Register your models here.
-from django.contrib import admin
-from .models import TelegramManager
 
 @admin.register(TelegramManager)
 class TelegramManagerAdmin(admin.ModelAdmin):

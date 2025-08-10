@@ -169,16 +169,16 @@
                 <div class="product-description">
                     {{ product.description|linebreaks }}
                 </div>
-                
-              <form method="post" action="{% url 'add_to_cart' product.id %}" class="add-to-cart">
-    {% csrf_token %}
-    <div class="quantity-selector">
-        <button type="button" class="quantity-btn minus">-</button>
-        <input type="number" name="quantity" value="1" min="1" class="quantity-input">
-        <button type="button" class="quantity-btn plus">+</button>
-    </div>
-    <button type="submit" class="btn">Добавить в корзину</button>
-</form>
+
+                <form method="post" action="{% url 'cart_operations' 'add' product.id %}" class="add-to-cart">
+                    {% csrf_token %}
+                    <div class="quantity-selector">
+                        <button type="button" class="quantity-btn minus">-</button>
+                        <input type="number" name="quantity" value="1" min="1" class="quantity-input">
+                        <button type="button" class="quantity-btn plus">+</button>
+                    </div>
+                    <button type="submit" class="btn">Добавить в корзину</button>
+                </form>
                 
                 <div class="product-meta">
                     <p><strong>Категория:</strong> 

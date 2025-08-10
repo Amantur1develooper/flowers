@@ -95,6 +95,7 @@
         }
     }
 </style>
+
 <style>
     .catalog-header {
         background-color: #f8f9fa;
@@ -227,17 +228,17 @@
         }
     }
     .price-filter {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    margin-bottom: 2rem;
-}
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
 
-.price-filter .form-label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
+    .price-filter .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
 </style>
 
 <style>
@@ -549,7 +550,6 @@
         color: #666;
     }
 </style>
-
 {% endblock %}
 
 
@@ -564,20 +564,19 @@
 
 <div class="container">
     <!-- Основные категории -->
- <!-- Основные категории -->
-<div class="main-categories">
-    <a href="{% url 'catalog' %}" class="main-category {% if not main_category %}active{% endif %}">
-        <i class="fas fa-star"></i>
-        <h3>Все товары</h3>
-    </a>
-    {% for main_cat in main_categories %}
-    <a href="{% url 'catalog_by_main_category' main_cat.slug %}" 
-       class="main-category {% if main_category == main_cat %}active{% endif %}">
-        <i class="{{ main_cat.icon }}"></i>
-        <h3>{{ main_cat.name }}</h3>
-    </a>
-    {% endfor %}
-</div>
+    <div class="main-categories">
+        <a href="{% url 'catalog' %}" class="main-category {% if not main_category %}active{% endif %}">
+            <i class="fas fa-star"></i>
+            <h3>Все товары</h3>
+        </a>
+        {% for main_cat in main_categories %}
+        <a href="{% url 'catalog_by_main_category' main_cat.slug %}" 
+        class="main-category {% if main_category == main_cat %}active{% endif %}">
+            <i class="{{ main_cat.icon }}"></i>
+            <h3>{{ main_cat.name }}</h3>
+        </a>
+        {% endfor %}
+    </div>
 
 <!-- Подкатегории -->
 {% if main_category %}
@@ -595,7 +594,6 @@
 </div>
 {% endif %}
     <!-- Фильтр по ценам с ползунками -->
-<!-- Фильтр по ценам с ползунками -->
 {% with min_range=min_price_range.min|default:0 max_range=min_price_range.max|default:10000 %}
 <div class="price-filter">
     <div class="filter-header">
@@ -651,8 +649,7 @@
     </form>
 </div>
 {% endwith %}
-   <!-- Фильтр по ценам -->
-<!-- Фильтр по ценам -->
+    <!-- Фильтр по ценам -->
 
     <!-- Сетка товаров -->
     <div class="products-grid">
@@ -859,41 +856,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-     <!-- Пагинация -->
-{% comment %} {% if products.paginator.num_pages > 1 %}
-<div class="pagination">
-    {% if products.has_previous %}
-    <div class="page-item">
-        <a href="?{% query_transform page=1 %}" class="page-link">&laquo; первая</a>
-    </div>
-    <div class="page-item">
-        <a href="?{% query_transform page=products.previous_page_number %}" class="page-link">предыдущая</a>
-    </div>
-    {% endif %}
     
-    {% for num in products.paginator.page_range %}
-    {% if products.number == num %}
-    <div class="page-item active">
-        <a href="?{% query_transform page=num %}" class="page-link">{{ num }}</a>
-    </div>
-    {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-    <div class="page-item">
-        <a href="?{% query_transform page=num %}" class="page-link">{{ num }}</a>
-    </div>
-    {% endif %}
-    {% endfor %}
-    
-    {% if products.has_next %}
-    <div class="page-item">
-        <a href="?{% query_transform page=products.next_page_number %}" class="page-link">следующая</a>
-    </div>
-    <div class="page-item">
-        <a href="?{% query_transform page=products.paginator.num_pages %}" class="page-link">последняя &raquo;</a>
-    </div>
-    {% endif %}
-</div>
-{% endif %} {% endcomment %}
-    <!-- Пагинация (остается без изменений) -->
-    {% comment %} {% include 'shop/includes/pagination.html' %} {% endcomment %}
 </div>
 {% endblock %}

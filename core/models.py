@@ -17,6 +17,8 @@ class Shop(models.Model):
     
     def __str__(self):
         return self.name
+    
+
 class MainCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name="Основная категория")
     slug = models.SlugField(max_length=100, unique=True, verbose_name="URL-адрес")
@@ -47,7 +49,6 @@ class Category(models.Model):
     
     def __str__(self):
         return f"{self.main_category.name} - {self.name}"
-    
     
 
 class Product(models.Model):
@@ -129,39 +130,7 @@ class Product(models.Model):
     
     def get_product_type_display(self):
         return dict(self.PRODUCT_TYPES).get(self.product_type)    
-# class Product(models.Model):
-#     category = models.ForeignKey(
-#         Category, 
-#         related_name='products', 
-#         on_delete=models.CASCADE, 
-#         verbose_name="Категория"
-#     )
-#     name = models.CharField(max_length=100, verbose_name="Название товара")
-#     image = models.ImageField(
-#         upload_to='image_product', 
-#         null=True, 
-#         blank=True,
-#         verbose_name="Изображение товара"
-#     )
-#     slug = models.SlugField(max_length=100, unique=True, verbose_name="URL-адрес")
-#     description = models.TextField(verbose_name="Описание товара")
-#     price = models.DecimalField(
-#         max_digits=10, 
-#         decimal_places=2, 
-#         verbose_name="Цена (сом)"
-#     )
-#     available = models.BooleanField(default=True, verbose_name="Доступен")
-#     featured = models.BooleanField(default=False, verbose_name="Рекомендуемый")
-#     created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-#     updated = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
-    
-#     class Meta:
-#         verbose_name = "Товар"
-#         verbose_name_plural = "Товары"
-#         ordering = ['-created']
-    
-#     def __str__(self):
-#         return self.name
+
 
 class Review(models.Model):
     product = models.ForeignKey(
@@ -193,9 +162,6 @@ class Review(models.Model):
         return f"Отзыв на {self.product.name} от {self.name}"
 
 
-from django.db import models
-from django.contrib.auth.models import User
-
 class TelegramManager(models.Model):
     user = models.OneToOneField(
         User, 
@@ -224,7 +190,6 @@ class TelegramManager(models.Model):
         return f"{self.user.get_full_name()} ({self.chat_id})"
     
     
-    
 class Cart(models.Model):
     user = models.OneToOneField(
         User, 
@@ -244,6 +209,7 @@ class Cart(models.Model):
     
     def __str__(self):
         return f"Корзина пользователя {self.user.username}"
+
 
 class CartItem(models.Model):
     cart = models.ForeignKey(
@@ -273,6 +239,7 @@ class CartItem(models.Model):
     
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
+
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -342,6 +309,7 @@ class Order(models.Model):
     def __str__(self):
         return f"Заказ №{self.id} от {self.first_name} {self.last_name}"
 
+
 class OrderItem(models.Model):
     order = models.ForeignKey(
         Order, 
@@ -374,6 +342,7 @@ class OrderItem(models.Model):
     
     def __str__(self):
         return f"{self.quantity} x {self.product.name} (заказ №{self.order.id})"
+
 
 class Customer(models.Model):
     user = models.OneToOneField(
@@ -411,132 +380,3 @@ class Customer(models.Model):
     
     def __str__(self):
         return f"Клиент {self.user.first_name} {self.user.last_name}"
-# from django.db import models
-# from django.contrib.auth.models import User
-# from django.core.validators import MinValueValidator
-
-# class Shop(models.Model):
-#     name = models.CharField(max_length=100)
-#     address = models.CharField(max_length=200)
-#     phone = models.CharField(max_length=20)
-#     work_hours = models.CharField(max_length=100)
-#     map_link = models.URLField(blank=True)
-    
-#     def __str__(self):
-#         return self.name
-
-# class Category(models.Model):
-#     name = models.CharField(max_length=100)
-#     slug = models.SlugField(max_length=100, unique=True)
-    
-#     def __str__(self):
-#         return self.name
-
-# class Product(models.Model):
-#     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
-#     name = models.CharField(max_length=100)
-#     image = models.ImageField(upload_to='image_product', null=True, blank=True,)
-#     slug = models.SlugField(max_length=100, unique=True)
-#     description = models.TextField()
-#     price = models.DecimalField(max_digits=10, decimal_places=2)
-#     available = models.BooleanField(default=True)
-#     featured = models.BooleanField(default=False)
-#     created = models.DateTimeField(auto_now_add=True)
-#     updated = models.DateTimeField(auto_now=True)
-    
-#     def __str__(self):
-#         return self.name
-
-# class Review(models.Model):
-#     product = models.ForeignKey(Product, related_name='reviews', on_delete=models.CASCADE)
-#     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
-#     name = models.CharField(max_length=50)
-#     email = models.EmailField()
-#     text = models.TextField()
-#     rating = models.PositiveSmallIntegerField(default=5)
-#     created = models.DateTimeField(auto_now_add=True)
-#     approved = models.BooleanField(default=False)
-    
-#     def __str__(self):
-#         return f"Review for {self.product.name} by {self.name}"
-
-# class Cart(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     created = models.DateTimeField(auto_now_add=True)
-#     updated = models.DateTimeField(auto_now=True)
-    
-#     def get_total_price(self):
-#         return sum(item.get_cost() for item in self.items.all())
-    
-#     def __str__(self):
-#         return f"Cart of {self.user.username}"
-
-# class CartItem(models.Model):
-#     cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE)
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-#     quantity = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
-    
-#     def get_cost(self):
-#         return self.product.price * self.quantity
-    
-#     def __str__(self):
-#         return f"{self.quantity}x {self.product.name}"
-
-# class Order(models.Model):
-#     STATUS_CHOICES = [
-#         ('new', 'Новый'),
-#         ('processing', 'В обработке'),
-#         ('ready', 'Готов к самовывозу'),
-#         ('delivering', 'В доставке'),
-#         ('completed', 'Завершен'),
-#         ('cancelled', 'Отменен'),
-#     ]
-    
-#     PAYMENT_CHOICES = [
-#         ('cash', 'Наличными'),
-#         ('card', 'Картой онлайн'),
-#     ]
-    
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     first_name = models.CharField(max_length=50)
-#     last_name = models.CharField(max_length=50)
-#     email = models.EmailField()
-#     phone = models.CharField(max_length=20)
-#     address = models.CharField(max_length=250, blank=True)
-#     shop = models.ForeignKey(Shop, null=True, blank=True, on_delete=models.SET_NULL)
-#     delivery_date = models.DateField()
-#     delivery_time = models.TimeField()
-#     card_message = models.TextField(blank=True)
-#     comments = models.TextField(blank=True)
-#     created = models.DateTimeField(auto_now_add=True)
-#     updated = models.DateTimeField(auto_now=True)
-#     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
-#     payment_method = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default='cash')
-#     total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    
-#     def __str__(self):
-#         return f"Order #{self.id} by {self.first_name} {self.last_name}"
-
-# class OrderItem(models.Model):
-#     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
-#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-#     price = models.DecimalField(max_digits=10, decimal_places=2)
-#     quantity = models.PositiveIntegerField(default=1)
-    
-#     def get_cost(self):
-#         return self.price * self.quantity
-    
-#     def __str__(self):
-#         return f"{self.quantity}x {self.product.name} in order #{self.order.id}"
-
-# class Customer(models.Model):
-#     user = models.OneToOneField(User, on_delete=models.CASCADE)
-#     phone = models.CharField(max_length=20)
-#     birthday = models.DateField(null=True, blank=True)
-#     spouse_name = models.CharField(max_length=100, blank=True)
-#     spouse_birthday = models.DateField(null=True, blank=True)
-#     favorite_flowers = models.CharField(max_length=200, blank=True)
-#     notes = models.TextField(blank=True)
-    
-#     def __str__(self):
-#         return f"Customer {self.user.first_name} {self.user.last_name}"

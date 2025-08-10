@@ -2,6 +2,7 @@ import requests
 from django.conf import settings
 from .models import TelegramManager
 
+
 def send_telegram_notification(message):
     """Отправка уведомления всем активным менеджерам"""
     if not settings.TELEGRAM_BOT_TOKEN:
@@ -33,6 +34,7 @@ def send_telegram_notification(message):
             print(f"Error sending Telegram notification to {manager.chat_id}: {e}")
     
     return success_count > 0
+
 
 def set_webhook():
     """Установка webhook для Telegram бота"""

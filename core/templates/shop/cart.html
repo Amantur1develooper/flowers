@@ -141,14 +141,14 @@
         </div>
         
         <div class="cart-item-actions">
-            <form method="post" action="{% url 'update_cart_item' item.product.id %}" class="cart-item-quantity">
+            <form method="post" action="{% url 'cart_operations' 'update' item.product.id %}" class="cart-item-quantity">
                 {% csrf_token %}
                 <button type="button" class="quantity-btn minus" onclick="this.parentNode.querySelector('input[type=number]').stepDown(); this.parentNode.submit()">-</button>
                 <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="quantity-input" onchange="this.parentNode.submit()">
                 <button type="button" class="quantity-btn plus" onclick="this.parentNode.querySelector('input[type=number]').stepUp(); this.parentNode.submit()">+</button>
             </form>
             
-            <form method="post" action="{% url 'remove_from_cart' item.product.id %}">
+            <form method="post" action="{% url 'cart_operations' 'remove' item.product.id %}">
                 {% csrf_token %}
                 <button type="submit" class="remove-btn">Удалить</button>
             </form>
