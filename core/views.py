@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 
 from .telegram_bot import send_telegram_notification
-from .models import Product, Category, MainCategory, Cart, CartItem, Order, Shop, Review, Customer
+from .models import Product, Category, MainCategory, Order, OrderItem, Shop, Review, Customer
 from .forms import CustomerForm
 
 
@@ -101,7 +101,6 @@ def product_detail(request, id, slug):
     return render(request, 'shop/product_detail.html', context)
 
 
-@login_required
 def cart_operations(request, product_id, operation):
     """Handle all cart operations (add/remove/update)"""
     product = get_object_or_404(Product, id=product_id)
@@ -178,39 +177,59 @@ def checkout(request):
         total_price += item_total
     
     if request.method == 'POST':
-        # Process order form
         required_fields = ['name', 'phone']
         if not all(request.POST.get(field) for field in required_fields):
             messages.error(request, "Пожалуйста, заполните обязательные поля")
             return redirect('checkout')
         
-        # Format order details
+        print(request.FILES)
+
+        print(request.FILES.get('receipt', None))
+
+        order = Order.objects.create(
+            full_name=request.POST.get('name'),
+            phone=request.POST.get('phone'),
+            address=request.POST.get('address', ''),
+            delivery_type=request.POST.get('delivery_type', 'pickup'),
+            comment=request.POST.get('comment', ''),
+            check_file=request.FILES.get('receipt', None),
+        )
+
+        total_price = 0
+        for product_id, quantity in cart.items():
+            product = get_object_or_404(Product, id=int(product_id))
+            item_total = product.price * quantity
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=quantity,
+                price=product.price
+            )
+            total_price += item_total
+
         order_details = {
-            'name': request.POST.get('name'),
-            'phone': request.POST.get('phone'),
-            'email': request.POST.get('email', ''),
-            'address': request.POST.get('address', ''),
-            'delivery_type': request.POST.get('delivery_type', 'self_pickup'),
-            'comment': request.POST.get('comment', ''),
+            'name': order.full_name,
+            'phone': order.phone,
+            'address': order.address,
+            'delivery_type': order.delivery_type,
+            'comment': order.comment,
             'items': [{
-                'name': p['product'].name,
-                'quantity': p['quantity'],
-                'price': p['product'].price,
-                'total': p['total']
-            } for p in products],
+                'name': item.product.name,
+                'quantity': item.quantity,
+                'price': item.price,
+                'total': item.get_cost()
+            } for item in order.items.all()],
             'total_price': total_price
         }
-        
-        # Send notification and clear cart
+
         if send_telegram_notification(format_telegram_message(order_details)):
-            request.session['order_id'] = random.randint(1000, 9999)
             messages.success(request, "Заказ успешно оформлен! Мы свяжемся с вами в ближайшее время.")
         else:
             messages.success(request, "Заказ оформлен! Примечание: не удалось отправить уведомление менеджерам.")
-        
+
         request.session['cart'] = {}
         return redirect('order_success')
-    
+
     return render(request, 'shop/checkout.html', {
         'cart_items': products,
         'total_price': total_price
@@ -286,7 +305,6 @@ def format_telegram_message(order_details):
 
 👤 <b>Клиент:</b> {order_details['name']}
 📞 <b>Телефон:</b> {order_details['phone']}
-📧 <b>Email:</b> {order_details['email'] or 'не указан'}
 {delivery_text}
 💬 <b>Комментарий:</b> {order_details['comment'] or 'нет комментария'}
 

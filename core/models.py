@@ -2,11 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 class Shop(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название магазина")
     address = models.CharField(max_length=200, verbose_name="Адрес")
-    phone = models.CharField(max_length=20, verbose_name="Телефон")
+    phone = PhoneNumberField(verbose_name="Телефон")
     work_hours = models.CharField(max_length=100, verbose_name="Часы работы")
     map_link = models.URLField(blank=True, verbose_name="Ссылка на карту")
     
@@ -188,57 +190,6 @@ class TelegramManager(models.Model):
     
     def __str__(self):
         return f"{self.user.get_full_name()} ({self.chat_id})"
-    
-    
-class Cart(models.Model):
-    user = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE,
-        verbose_name="Пользователь"
-    )
-    created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
-    
-    class Meta:
-        verbose_name = "Корзина"
-        verbose_name_plural = "Корзины"
-        ordering = ['-created']
-    
-    def get_total_price(self):
-        return sum(item.get_cost() for item in self.items.all())
-    
-    def __str__(self):
-        return f"Корзина пользователя {self.user.username}"
-
-
-class CartItem(models.Model):
-    cart = models.ForeignKey(
-        Cart, 
-        related_name='items', 
-        on_delete=models.CASCADE,
-        verbose_name="Корзина"
-    )
-    product = models.ForeignKey(
-        Product, 
-        on_delete=models.CASCADE,
-        verbose_name="Товар"
-    )
-    quantity = models.PositiveIntegerField(
-        default=1, 
-        validators=[MinValueValidator(1)],
-        verbose_name="Количество"
-    )
-    
-    class Meta:
-        verbose_name = "Элемент корзины"
-        verbose_name_plural = "Элементы корзины"
-        ordering = ['-id']
-    
-    def get_cost(self):
-        return self.product.price * self.quantity
-    
-    def __str__(self):
-        return f"{self.quantity} x {self.product.name}"
 
 
 class Order(models.Model):
@@ -256,20 +207,10 @@ class Order(models.Model):
         ('card', 'Картой онлайн'),
     ]
     
-    user = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE,
-        verbose_name="Пользователь"
-    )
-    first_name = models.CharField(max_length=50, verbose_name="Имя")
-    last_name = models.CharField(max_length=50, verbose_name="Фамилия")
-    email = models.EmailField(verbose_name="Email")
-    phone = models.CharField(max_length=20, verbose_name="Телефон")
-    address = models.CharField(
-        max_length=250, 
-        blank=True,
-        verbose_name="Адрес доставки"
-    )
+    # user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
+    full_name = models.CharField(max_length=50, verbose_name="ФИО")
+    phone = PhoneNumberField(verbose_name="Телефон")
+    address = models.CharField(max_length=250, blank=True, verbose_name="Адрес доставки")
     shop = models.ForeignKey(
         Shop, 
         null=True, 
@@ -277,12 +218,22 @@ class Order(models.Model):
         on_delete=models.SET_NULL,
         verbose_name="Магазин самовывоза"
     )
-    delivery_date = models.DateField(verbose_name="Дата доставки")
-    delivery_time = models.TimeField(verbose_name="Время доставки")
+    delivery_date = models.DateField(verbose_name="Дата доставки", null=True, blank=True)
+    delivery_time = models.TimeField(verbose_name="Время доставки", null=True, blank=True)
+    delivery_type = models.CharField(
+        max_length=20, 
+        choices=[
+            ('pickup', 'Самовывоз'),
+            ('delivery', 'Доставка')
+        ],
+        default='pickup',
+        verbose_name="Тип доставки"
+    )
     card_message = models.TextField(blank=True, verbose_name="Текст открытки")
-    comments = models.TextField(blank=True, verbose_name="Комментарии к заказу")
-    created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
-    updated = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    comment = models.TextField(blank=True, verbose_name="Комментарии к заказу")
+    created_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated_date = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    check_file = models.FileField(upload_to='checks/', blank=True, verbose_name="Чек (фото/файл)")
     status = models.CharField(
         max_length=20, 
         choices=STATUS_CHOICES, 
@@ -295,19 +246,18 @@ class Order(models.Model):
         default='cash',
         verbose_name="Способ оплаты"
     )
-    total_price = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2,
-        verbose_name="Общая сумма"
-    )
     
     class Meta:
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
-        ordering = ['-created']
+        ordering = ['-created_date']
+
+    @property
+    def total_price(self):
+        return sum(item.get_cost() for item in self.items.all())
     
     def __str__(self):
-        return f"Заказ №{self.id} от {self.first_name} {self.last_name}"
+        return f"Заказ №{self.id} от {self.full_name}"
 
 
 class OrderItem(models.Model):
@@ -325,7 +275,8 @@ class OrderItem(models.Model):
     price = models.DecimalField(
         max_digits=10, 
         decimal_places=2,
-        verbose_name="Цена"
+        verbose_name="Цена",
+        default=0.00,
     )
     quantity = models.PositiveIntegerField(
         default=1,
@@ -345,12 +296,8 @@ class OrderItem(models.Model):
 
 
 class Customer(models.Model):
-    user = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE,
-        verbose_name="Пользователь"
-    )
-    phone = models.CharField(max_length=20, verbose_name="Телефон")
+    full_name = models.CharField(max_length=100, verbose_name="Полное имя")
+    phone = PhoneNumberField(verbose_name="Телефон")
     birthday = models.DateField(
         null=True, 
         blank=True,
@@ -359,24 +306,30 @@ class Customer(models.Model):
     spouse_name = models.CharField(
         max_length=100, 
         blank=True,
-        verbose_name="Имя супруга/супруги"
+        verbose_name="Имя супруга/супруги (жена или муж)"
     )
     spouse_birthday = models.DateField(
         null=True, 
         blank=True,
         verbose_name="Дата рождения супруга/супруги"
     )
+    spouse_phone = PhoneNumberField(verbose_name="Телефон супруга/супруги", blank=True)
     favorite_flowers = models.CharField(
         max_length=200, 
         blank=True,
         verbose_name="Любимые цветы"
     )
     notes = models.TextField(blank=True, verbose_name="Заметки")
+    point = models.PositiveIntegerField(
+        default=0, 
+        validators=[MinValueValidator(0)],
+        verbose_name="Баллы"
+    )
     
     class Meta:
         verbose_name = "Клиент"
         verbose_name_plural = "Клиенты"
-        ordering = ['user__last_name']
+        ordering = ['-id']
     
     def __str__(self):
-        return f"Клиент {self.user.first_name} {self.user.last_name}"
+        return f"Клиент {self.full_name}"

@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% load static %}
+
 
 {% block extra_css %}
 <style>
@@ -99,8 +101,20 @@
             Итого: {{ total_price }} сом
         </div>
     </div>
+
+    <div class="bank_detail">
+        <div>
+            <img src="{% static "images/mbank_logo.jpg" %}" alt="">
+        </div>
+        <div class="bank_detail mbank_qr">
+            <img src="{% static "images/mbank_qr.jpg" %}" alt="">
+        </div>
+        <div>
+            +996553999290
+        </div>
+    </div>
     
-    <form method="post" class="checkout-form">
+    <form method="post" class="checkout-form" enctype="multipart/form-data">
         {% csrf_token %}
         
         <div class="form-group">
@@ -111,11 +125,6 @@
         <div class="form-group">
             <label for="phone" class="form-label required-field">Телефон</label>
             <input type="tel" id="phone" name="phone" class="form-control" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" id="email" name="email" class="form-control">
         </div>
         
         <div class="form-group">
@@ -130,7 +139,7 @@
             </div>
         </div>
         
-        <div class="form-group" id="address-field" style="display: none;">
+        <div class="form-group" id="address-field">
             <label for="address" class="form-label">Адрес доставки</label>
             <input type="text" id="address" name="address" class="form-control">
         </div>
@@ -139,7 +148,12 @@
             <label for="comment" class="form-label">Комментарий к заказу</label>
             <textarea id="comment" name="comment" class="form-control" rows="3"></textarea>
         </div>
-        
+
+        <div class="form-group">
+            <label class="form-label">Чек</label>
+            <input type="file" id="receipt" name="receipt" class="form-control">
+        </div>
+
         <button type="submit" class="submit-btn">Подтвердить заказ</button>
     </form>
 </div>

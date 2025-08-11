@@ -1,0 +1,15 @@
+.bank_detail{
+    display: flex;
+    justify-content: space-between;
+    max-height: 500px;
+    align-items: center;
+    padding: 20px 0;
+}
+
+.bank_detail.mbank_qr{
+    width: 200px;
+}
+
+.bank_detail.mbank_qr img{
+    width: 100%;
+}
