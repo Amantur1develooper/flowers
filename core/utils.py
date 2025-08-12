@@ -14,10 +14,15 @@ def send_daily_report():
 
     for customer in customers_birthdays:
         lines.append(f"""
-        {customer.spouse_name or "не указано"}
-        'Телефон супруга/супруги' - {customer.spouse_phone or "не указано"}
-        'Заметки' - {customer.notes or "нет заметок"}
-        'Баллы' - {customer.point or "нет баллов"}
+        Имя клиента - {customer.full_name or "не указано"}
+        Телефон клиента - {customer.phone or "не указано"}
+        Дата рождения клиента - {customer.birthday.strftime('%d.%m.%Y') if customer.birthday else "не указана"}
+        Дата рождения супруга/супруги - {customer.spouse_birthday.strftime('%d.%m.%Y') if customer.spouse_birthday else "не указана"}
+        Имя супруга/супруги (жена или муж) - {customer.spouse_name or "не указано"}
+        Телефон супруга/супруги - {customer.spouse_phone or "не указано"}
+        Любимые цветы - {customer.favorite_flowers or "не указаны"} 
+        Заметки - {customer.notes or "нет заметок"}
+        Баллы - {customer.point or "нет баллов"}
 
         \n
         """)
@@ -25,7 +30,7 @@ def send_daily_report():
     message = (
         f"<b>Ежедневное уведомление — {today.strftime('%d.%m.%Y')}</b>\n"
         "Дни рождения супругов:\n" +
-        "\n".join(lines)
+        "\n".join(lines) or "Нет дней рождения сегодня."
     )
 
     send_telegram_notification(message)
