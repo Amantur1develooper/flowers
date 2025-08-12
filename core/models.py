@@ -209,7 +209,7 @@ class Order(models.Model):
     
     # user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь")
     full_name = models.CharField(max_length=50, verbose_name="ФИО")
-    phone = PhoneNumberField(verbose_name="Телефон")
+    phone = models.CharField(max_length=20, verbose_name="Телефон")
     address = models.CharField(max_length=250, blank=True, verbose_name="Адрес доставки")
     shop = models.ForeignKey(
         Shop, 
@@ -297,7 +297,7 @@ class OrderItem(models.Model):
 
 class Customer(models.Model):
     full_name = models.CharField(max_length=100, verbose_name="Полное имя")
-    phone = PhoneNumberField(verbose_name="Телефон")
+    phone = models.CharField(max_length=20, verbose_name="Телефон",)
     birthday = models.DateField(
         null=True, 
         blank=True,
@@ -313,7 +313,7 @@ class Customer(models.Model):
         blank=True,
         verbose_name="Дата рождения супруга/супруги"
     )
-    spouse_phone = PhoneNumberField(verbose_name="Телефон супруга/супруги", blank=True)
+    spouse_phone = models.CharField(max_length=20, verbose_name="Телефон супруга/супруги", blank=True)
     favorite_flowers = models.CharField(
         max_length=200, 
         blank=True,

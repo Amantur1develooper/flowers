@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 from apscheduler.schedulers.background import BackgroundScheduler
+import os
 
 
 class CoreConfig(AppConfig):
@@ -7,8 +8,11 @@ class CoreConfig(AppConfig):
     name = 'core'
 
     def ready(self):
+        if os.environ.get('RUN_MAIN', None) != 'true':
+            return 
+
         from .utils import send_daily_report
         scheduler = BackgroundScheduler()
-        scheduler.add_job(send_daily_report, 'cron', hour=13, minute=19) 
+        scheduler.add_job(send_daily_report, 'cron', hour=15, minute=0) 
         scheduler.start()
 

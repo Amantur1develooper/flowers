@@ -18,7 +18,7 @@ def send_telegram_notification(message):
     
     url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
     success_count = 0
-    
+
     for manager in active_managers:
         payload = {
             'chat_id': manager.chat_id,
