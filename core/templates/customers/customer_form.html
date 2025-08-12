@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>{% if object %}Редактирование клиента{% else %}Добавление клиента{% endif %}</h2>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Полное имя</label>
+                    <div class="col-sm-9">
+                        {{ form.full_name }}
+                        {{ form.full_name.errors }}
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Телефон</label>
+                    <div class="col-sm-9">
+                        {{ form.phone }}
+                        {{ form.phone.errors }}
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Дата рождения</label>
+                    <div class="col-sm-9">
+                        {{ form.birthday }}
+                        {{ form.birthday.errors }}
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Имя супруга/супруги</label>
+                    <div class="col-sm-9">
+                        {{ form.spouse_name }}
+                        {{ form.spouse_name.errors }}
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Дата рождения супруга/супруги</label>
+                    <div class="col-sm-9">
+                        {{ form.spouse_birthday }}
+                        {{ form.spouse_birthday.errors }}
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Телефон супруга/супруги</label>
+                    <div class="col-sm-9">
+                        {{ form.spouse_phone }}
+                        {{ form.spouse_phone.errors }}
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Любимые цветы</label>
+                    <div class="col-sm-9">
+                        {{ form.favorite_flowers }}
+                        {{ form.favorite_flowers.errors }}
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Заметки</label>
+                    <div class="col-sm-9">
+                        {{ form.notes }}
+                        {{ form.notes.errors }}
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Баллы</label>
+                    <div class="col-sm-9">
+                        {{ form.point }}
+                        {{ form.point.errors }}
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <div class="col-sm-9 offset-sm-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Сохранить
+                        </button>
+                        <a href="{% url 'customer-list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Отмена
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

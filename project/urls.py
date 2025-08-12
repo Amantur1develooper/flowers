@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static 
 from core import views
 
-   
+
 urlpatterns = [  
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
@@ -44,7 +44,12 @@ urlpatterns = [
     path('contacts/', views.contacts, name='contacts'),
     
     path('crm/<str:template>/', views.crm_view, name='crm_view'),
+
+    path('customer-list/', views.CustomerListView.as_view(), name='customer-list'),
+    path('customer-add/', views.CustomerCreateView.as_view(), name='customer-add'),
+    path('customer-edit/<int:pk>/', views.CustomerUpdateView.as_view(), name='customer-edit'),
 ]
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

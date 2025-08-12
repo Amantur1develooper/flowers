@@ -1,13 +1,56 @@
 import random
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+from django.views.generic import ListView, CreateView, UpdateView
+from django.urls import reverse_lazy
 
 from .telegram_bot import send_telegram_notification
 from .models import Product, Category, MainCategory, Order, OrderItem, Shop, Review, Customer
 from .forms import CustomerForm
+
+
+class CustomerListView(ListView):
+    model = Customer
+    template_name = 'customers/customer_list.html'
+    context_object_name = 'customers'
+    paginate_by = 20
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            queryset = queryset.filter(
+                Q(full_name__icontains=search_query) |
+                Q(phone__icontains=search_query) |
+                Q(spouse_name__icontains=search_query) |
+                Q(spouse_phone__icontains=search_query)
+            )
+        return queryset
+
+
+class CustomerCreateView(CreateView):
+    model = Customer
+    template_name = 'customers/customer_form.html'
+    fields = [
+        'full_name', 'phone', 'birthday', 
+        'spouse_name', 'spouse_birthday', 'spouse_phone',
+        'favorite_flowers', 'notes', 'point'
+    ]
+    success_url = reverse_lazy('customer-list')
+
+
+class CustomerUpdateView(UpdateView):
+    model = Customer
+    template_name = 'customers/customer_form.html'
+    fields = [
+        'full_name', 'phone', 'birthday', 
+        'spouse_name', 'spouse_birthday', 'spouse_phone',
+        'favorite_flowers', 'notes', 'point'
+    ]
+    success_url = reverse_lazy('customer-list')
 
 
 def index(request):
