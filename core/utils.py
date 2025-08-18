@@ -12,7 +12,8 @@ def send_daily_report():
     today = timezone.localdate()
 
     customers_birthdays = Customer.objects.filter(
-        Q(spouse_birthday=today) | Q(birthday=today)
+        Q(spouse_birthday__month=today.month, spouse_birthday__day=today.day) |
+        Q(birthday__month=today.month, birthday__day=today.day)
     )
     lines = []
 
