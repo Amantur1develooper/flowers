@@ -309,13 +309,13 @@
         });
         
         // Update cart count from localStorage or server
-        function updateCartCount() {
+        {% comment %} function updateCartCount() {
             // This should be replaced with actual cart count from your backend
             const cartCount = localStorage.getItem('cartCount') || 0;
             document.querySelectorAll('.cart-count').forEach(el => {
                 el.textContent = cartCount;
-            });
-        }
+            }); {% endcomment %}
+        {% comment %} } {% endcomment %}
         
         // Initialize
         document.addEventListener('DOMContentLoaded', updateCartCount);

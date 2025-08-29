@@ -190,6 +190,9 @@ def cart_detail(request):
             'total': item_total
         })
         total_price += item_total
+
+    items_count = sum(item['quantity'] for item in products)
+    request.session['cart_items_count'] = items_count
     
     return render(request, 'shop/cart.html', {
         'cart_items': products,

@@ -138,7 +138,7 @@
         <div class="cart-item-details">
             <h3 class="cart-item-title">{{ item.product.name }}</h3>
             <p class="cart-item-price">{{ item.product.price }} сом × {{ item.quantity }} = {{ item.total }} сом</p>
-        </div>
+        </div> 
         
         <div class="cart-item-actions">
             <form method="post" action="{% url 'cart_operations' 'update' item.product.id %}" class="cart-item-quantity">
