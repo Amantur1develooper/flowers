@@ -3,7 +3,11 @@
 <header>
     <div class="container">
         <div class="header-content">
-            <a href="{% url 'index' %}" class="logo">Цветочная <span>лавка</span></a>
+            <a href="{% url 'index' %}" class="logo">
+                <div class="logo-rectangle">
+                    <span class="logo-text">DonButon</span>
+                </div>
+            </a>
             
             <button class="nav-toggle" id="navToggle">
                 <i class="fas fa-bars"></i>
@@ -43,3 +47,40 @@
         </div>
     </div>
 </header>
+
+<style>
+    .logo-rectangle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #e91e63; /* Красный фон */
+        color: white;
+        padding: 10px 15px;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 1.5rem;
+        height: 40px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    .logo-text {
+        color: white;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Обновляем старые стили логотипа */
+    .logo {
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    /* Для мобильных устройств */
+    @media (max-width: 768px) {
+        .logo-rectangle {
+            padding: 8px 12px;
+            font-size: 1.3rem;
+            height: 36px;
+        }
+    }
+</style>
