@@ -5,6 +5,25 @@ from django.contrib import admin
 from django.utils.html import format_html
 from .models import *
 
+from django.contrib import admin
+from .models import MainCategory
+
+
+@admin.register(MainCategory)
+class MainCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug", "icon", "preview_icon")   # колонки в списке
+    search_fields = ("name", "slug")                         # поиск
+    prepopulated_fields = {"slug": ("name",)}                # автозаполнение slug по name
+    list_editable = ("icon",)                                # можно менять иконку прямо в списке
+    ordering = ("name",)                                     # сортировка по имени
+
+    # маленький рендер иконки для удобства
+    def preview_icon(self, obj):
+        if obj.icon:
+            return f'<i class="{obj.icon}"></i>'
+        return "—"
+    preview_icon.short_description = "Иконка"
+    preview_icon.allow_tags = True
 
 @admin.register(Shop)
 class ShopAdmin(admin.ModelAdmin):
