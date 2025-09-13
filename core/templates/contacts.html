@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .contacts-hero {
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/static/images/contacts-bg.jpg');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 4rem 1rem;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .contacts-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .section-title h2 {
+        font-size: 2rem;
+        position: relative;
+        display: inline-block;
+        padding-bottom: 10px;
+    }
+    
+    .section-title h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background-color: #e91e63;
+    }
+    
+    .shops-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .shop-card {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .shop-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .shop-name {
+        font-size: 1.4rem;
+        color: #e91e63;
+        margin-bottom: 1rem;
+    }
+    
+    .shop-info {
+        margin-bottom: 1.5rem;
+    }
+    
+    .shop-info p {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+    
+    .shop-info i {
+        margin-right: 0.5rem;
+        color: #e91e63;
+        width: 20px;
+    }
+    
+    .product-types {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .product-badge {
+        background-color: #f8f9fa;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid #e91e63;
+        color: #e91e63;
+    }
+    
+    .map-btn {
+        display: inline-block;
+        background-color: #e91e63;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+    
+    .map-btn:hover {
+        background-color: #c2185b;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .filter-btn {
+        background-color: white;
+        border: 2px solid #e91e63;
+        color: #e91e63;
+        padding: 0.5rem 1.5rem;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-btn.active, .filter-btn:hover {
+        background-color: #e91e63;
+        color: white;
+    }
+    
+    .contact-info {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    
+    .contact-info h3 {
+        margin-bottom: 1rem;
+        color: #e91e63;
+    }
+    
+    .contact-methods {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+    
+    .contact-method {
+        text-align: center;
+    }
+    
+    .contact-method i {
+        font-size: 2rem;
+        color: #e91e63;
+        margin-bottom: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .shops-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .contact-methods {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Герой-секция -->
+<section class="contacts-hero">
+    <div class="contacts-container">
+        <h1>Наши контакты</h1>
+        <p>Мы всегда рады видеть вас в наших магазинах</p>
+    </div>
+</section>
+
+<div class="contacts-container">
+    <!-- Контактная информация -->
+    <div class="contact-info">
+        <h3>Свяжитесь с нами</h3>
+        <div class="contact-methods">
+            <div class="contact-method">
+                <i class="fas fa-phone"></i>
+                <p>Единый номер</p>
+                <p><strong>+996 555 123456</strong></p>
+            </div>
+            
+            <div class="contact-method">
+                <i class="fas fa-envelope"></i>
+                <p>Email</p>
+                <p><strong>info@donbuton.kg</strong></p>
+            </div>
+            
+            <div class="contact-method">
+                <i class="fas fa-clock"></i>
+                <p>Время работы</p>
+                <p><strong>24/7</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопки фильтрации -->
+    {% comment %} <div class="filter-buttons">
+        <button class="filter-btn active" data-filter="all">Все филиалы</button>
+        <button class="filter-btn" data-filter="flowers">С цветами</button>
+        <button class="filter-btn" data-filter="cakes">С тортами</button>
+        <button class="filter-btn" data-filter="potted">С горшочными растениями</button>
+    </div> {% endcomment %}
+
+    <!-- Список магазинов -->
+    <div class="section-title">
+        <h2>Наши филиалы</h2>
+    </div>
+    
+    <div class="shops-grid" id="shops-container">
+        {% for shop in shops %}
+        <div class="shop-card" data-flowers="{{ shop.sells_flowers|yesno:'true,false' }}" data-cakes="{{ shop.sells_cakes|yesno:'true,false' }}" data-potted="{{ shop.sells_potted_plants|yesno:'true,false' }}">
+            <h3 class="shop-name">{{ shop.name }}</h3>
+            
+            <div class="shop-info">
+                <p><i class="fas fa-map-marker-alt"></i> {{ shop.address }}</p>
+                <p><i class="fas fa-phone"></i> {{ shop.phone }}</p>
+                <p><i class="fas fa-clock"></i> {{ shop.work_hours }}</p>
+            </div>
+            
+            <div class="product-types">
+                {% if shop.sells_flowers %}
+                <span class="product-badge">Цветы</span>
+                {% endif %}
+                
+                {% if shop.sells_cakes %}
+                <span class="product-badge">Торты</span>
+                {% endif %}
+                
+                {% if shop.sells_potted_plants %}
+                <span class="product-badge">Горшочные растения</span>
+                {% endif %}
+            </div>
+            
+            {% if shop.map_link %}
+            <a href="{{ shop.map_link }}" target="_blank" class="map-btn">
+                <i class="fas fa-map"></i> Посмотреть на карте
+            </a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // Фильтрация магазинов по типу товаров
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            // Убираем активный класс у всех кнопок
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Добавляем активный класс текущей кнопке
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            const shops = document.querySelectorAll('.shop-card');
+            
+            shops.forEach(shop => {
+                if (filter === 'all') {
+                    shop.style.display = 'block';
+                } else if (filter === 'flowers' && shop.getAttribute('data-flowers') === 'true') {
+                    shop.style.display = 'block';
+                } else if (filter === 'cakes' && shop.getAttribute('data-cakes') === 'true') {
+                    shop.style.display = 'block';
+                } else if (filter === 'potted' && shop.getAttribute('data-potted') === 'true') {
+                    shop.style.display = 'block';
+                } else {
+                    shop.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
