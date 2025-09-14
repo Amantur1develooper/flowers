@@ -45,6 +45,8 @@ urlpatterns = [
     
     path('crm/<str:template>/', views.crm_view, name='crm_view'),
 
+    path('perekrestk/', views.main_menu, name='main_menu'),
+    
     path('customer-list/', views.CustomerListView.as_view(), name='customer-list'),
     path('customer-add/', views.CustomerCreateView.as_view(), name='customer-add'),
     path('customer-edit/<int:pk>/', views.CustomerUpdateView.as_view(), name='customer-edit'),

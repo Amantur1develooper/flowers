@@ -359,3 +359,13 @@ def format_telegram_message(order_details):
 
 <b>Итого:</b> {order_details['total_price']} сом
 """
+
+
+def main_menu(request):
+    # Получаем основные категории для отображения
+    main_categories = MainCategory.objects.all()
+    
+    context = {
+        'main_categories': main_categories,
+    }
+    return render(request, 'shop/main_menu.html', context)

@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    /* Основные стили */
+    .main-menu {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 1rem;
+    }
+    
+    .menu-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+    
+    .logo-section {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .logo-large {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #e91e63;
+        color: white;
+        padding: 15px 25px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 2.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        margin-bottom: 1rem;
+    }
+    
+    .welcome-text {
+        font-size: 1.2rem;
+        color: #555;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    /* Сетка кнопок */
+    .buttons-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+    
+    .menu-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: white;
+        border-radius: 12px;
+        padding: 2rem 1.5rem;
+        text-decoration: none;
+        color: #333;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        text-align: center;
+        min-height: 180px;
+    }
+    
+    .menu-button:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        color: #333;
+    }
+    
+    .button-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .button-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .button-description {
+        font-size: 0.9rem;
+        color: #666;
+    }
+    
+    /* Цвета для разных категорий */
+    .flowers-btn .button-icon { color: #e91e63; }
+    .potted-btn .button-icon { color: #4caf50; }
+    .cakes-btn .button-icon { color: #ff9800; }
+    .toys-btn .button-icon { color: #2196f3; }
+    .whatsapp-btn { background-color: #25d366; color: white !important; }
+    .address-btn .button-icon { color: #9c27b0; }
+    
+    .whatsapp-btn:hover {
+        background-color: #128c7e;
+        color: white;
+    }
+    
+    /* Быстрые контакты */
+    .quick-contacts {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 3rem;
+    }
+    
+    .quick-contact {
+        display: flex;
+        align-items: center;
+        background-color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s ease;
+    }
+    
+    .quick-contact:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        color: #333;
+    }
+    
+    .quick-contact i {
+        font-size: 1.5rem;
+        margin-right: 0.8rem;
+    }
+    
+    /* Мобильные стили */
+    @media (max-width: 768px) {
+        .logo-large {
+            font-size: 2rem;
+            padding: 12px 20px;
+        }
+        
+        .welcome-text {
+            font-size: 1rem;
+            padding: 0 1rem;
+        }
+        
+        .buttons-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .menu-button {
+            min-height: 140px;
+            padding: 1.5rem 1rem;
+        }
+        
+        .button-icon {
+            font-size: 2.5rem;
+        }
+        
+        .button-title {
+            font-size: 1.2rem;
+        }
+        
+        .quick-contacts {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .quick-contact {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .main-menu {
+            padding: 0.5rem;
+        }
+        
+        .menu-container {
+            padding: 1rem 0.5rem;
+        }
+        
+        .logo-large {
+            font-size: 1.8rem;
+        }
+        
+        .button-icon {
+            font-size: 2.2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-menu">
+    <div class="menu-container">
+        <!-- Логотип и приветствие -->
+        <div class="logo-section">
+            <div class="logo-large">DonButon</div>
+            <p class="welcome-text">Добро пожаловать в наш магазин! Выберите категорию товаров или свяжитесь с нами.</p>
+        </div>
+        
+        <!-- Основные кнопки -->
+        <div class="buttons-grid">
+            <!-- Цветы -->
+            <a href="https://donbuton.kg/catalog/cvety/" class="menu-button flowers-btn">
+                <div class="button-icon">
+                    <i class="fas fa-spa"></i>
+                </div>
+                <div class="button-title">Цветы</div>
+                <div class="button-description">Свежие букеты и композиции</div>
+            </a>
+            
+            <!-- Цветы в горшках -->
+            <a href="{% url 'catalog_by_main_category' 'potted-plants' %}" class="menu-button potted-btn">
+                <div class="button-icon">
+                    <i class="fas fa-seedling"></i>
+                </div>
+                <div class="button-title">Цветы в горшках</div>
+                <div class="button-description">Комнатные растения для дома</div>
+            </a>
+            
+            <!-- Торты -->
+            <a href="{% url 'catalog_by_main_category' 'cakes' %}" class="menu-button cakes-btn">
+                <div class="button-icon">
+                    <i class="fas fa-birthday-cake"></i>
+                </div>
+                <div class="button-title">Торты</div>
+                <div class="button-description">Вкусные десерты на заказ</div>
+            </a>
+            
+            <!-- Игрушки -->
+            <a href="{% url 'catalog_by_main_category' 'toys' %}" class="menu-button toys-btn">
+                <div class="button-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="button-title">Игрушки</div>
+                <div class="button-description">Для детей и взрослых</div>
+            </a>
+            
+            <!-- WhatsApp -->
+            <a href="https://wa.me/996555123456?text=Здравствуйте!%20Я%20хочу%20сделать%20заказ%20в%20DonButon" 
+               target="_blank" class="menu-button whatsapp-btn">
+                <div class="button-icon">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+                <div class="button-title">Написать в WhatsApp</div>
+                <div class="button-description">Быстрая связь с менеджером</div>
+            </a>
+            
+            <!-- Адреса -->
+            <a href="{% url 'contacts' %}" class="menu-button address-btn">
+                <div class="button-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div class="button-title">Наши адреса</div>
+                <div class="button-description">Все магазины на карте</div>
+            </a>
+        </div>
+        
+        <!-- Быстрые контакты -->
+        <div class="quick-contacts">
+            <a href="tel:+996555123456" class="quick-contact">
+                <i class="fas fa-phone"></i>
+                <span>+996 555 123456</span>
+            </a>
+            
+            <a href="mailto:info@donbuton.kg" class="quick-contact">
+                <i class="fas fa-envelope"></i>
+                <span>info@donbuton.kg</span>
+            </a>
+            
+            <a href="https://www.instagram.com/donbuton" target="_blank" class="quick-contact">
+                <i class="fab fa-instagram"></i>
+                <span>@donbuton</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
