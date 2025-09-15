@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
 
 {% block extra_css %}
+
 <style>
+    :root {
+        --primary-color: #8E1C24; /* R142 G28 B36 */
+        --primary-color-rgb: 142, 28, 36;
+        --white: #ffffff;
+        --box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        --transition: all 0.3s ease;
+    }
     /* Hero Section */
     .hero {
-        background: linear-gradient(rgba(220, 28, 28, 0.6), rgba(135, 57, 57, 0.6)), url('https://example.com/flowers-hero.jpg');
+         background: linear-gradient(rgba(var(--primary-color-rgb), 0.6), rgba(var(--primary-color-rgb), 0.6));
         background-size: cover;
         background-position: center;
         height: 70vh;

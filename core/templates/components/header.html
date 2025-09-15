@@ -5,10 +5,8 @@
         <div class="header-content">
             
             <a href="{% url 'index' %}" class="logo">
-                <div class="logo-rectangle">
-                    <span class="logo-text">DonButon</span>
-                </div>
-            </a>
+    <img src="{% static 'images/logo2.png' %}" alt="Логотип" class="logo-img">
+</a>
             
             <button class="nav-toggle" id="navToggle">
                 <i class="fas fa-bars"></i>
@@ -50,6 +48,34 @@
 </header>
 
 <style>
+.logo-img {
+    height: 110px; /* десктоп */
+    width: auto;
+    display: block;
+}
+
+/* Планшеты (до 992px) */
+@media (max-width: 992px) {
+    .logo-img {
+        height: 100px;
+    }
+}
+
+/* Смартфоны (до 768px) */
+@media (max-width: 768px) {
+    .logo-img {
+        height: 80px;
+    }
+}
+
+/* Маленькие смартфоны (до 480px) */
+@media (max-width: 480px) {
+    .logo-img {
+        height: 60px;
+    }
+}
+
+
     .logo-rectangle {
         display: inline-flex;
         align-items: center;

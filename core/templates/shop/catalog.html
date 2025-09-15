@@ -2,6 +2,7 @@
 
 {% block extra_css %}
 <style>
+    
     .catalog-header {
         background-color: #f8f9fa;
         padding: 3rem 0;
@@ -32,7 +33,7 @@
     }
     
     .main-category:hover, .main-category.active {
-        background-color: #e91e63;
+        background-color: rgb(156, 19, 37);
         color: white;
         transform: translateY(-5px);
     }
@@ -67,7 +68,7 @@
     }
     
     .category-item:hover, .category-item.active {
-        background-color: #e91e63;
+        background-color: rgb(156, 19, 37);
         color: white;
         transform: translateY(-3px);
     }
@@ -76,7 +77,7 @@
         position: absolute;
         top: 10px;
         right: 10px;
-        background-color: #4caf50;
+        background-color: #bf044cff;
         color: white;
         padding: 0.3rem 0.6rem;
         border-radius: 20px;
@@ -124,51 +125,59 @@
     }
     
     .category-item:hover, .category-item.active {
-        background-color: #e91e63;
+        background-color: rgb(156, 19, 37);
         color: white;
         transform: translateY(-3px);
     }
     
     .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 2rem;
-        margin-bottom: 3rem;
-    }
-    
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 в ряд для десктопа */
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
     .product-card {
-        background-color: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        transition: all 0.3s ease;
-    }
+    background-color: var(--white);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* все карточки тянутся одинаково */
+}
+   
     
     .product-card:hover {
         transform: translateY(-10px);
         box-shadow: 0 15px 30px rgba(0,0,0,0.1);
     }
-    
+    .product-img {
+    width: 100%;
+    height: 250px; /* фиксируем высоту */
+    object-fit: contain; /* показываем всю картинку целиком */
+    background-color: #f8f8f8; /* фон, если картинка не заполняет всё */
+    padding: 10px; /* небольшой отступ вокруг */
+}
     .product-img-container {
         height: 250px;
         overflow: hidden;
     }
     
-    .product-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
+    
     
     .product-card:hover .product-img {
         transform: scale(1.05);
     }
     
+   
     .product-info {
-        padding: 1.5rem;
-    }
-    
+    padding: 1.5rem;
+    flex-grow: 1; /* тянем описание вниз */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
     .product-title {
         font-size: 1.1rem;
         margin-bottom: 0.5rem;
@@ -176,7 +185,7 @@
     }
     
     .product-price {
-        color: #e91e63;
+        color: rgb(156, 19, 37);
         font-weight: 700;
         font-size: 1.2rem;
         margin-bottom: 1rem;
@@ -203,7 +212,7 @@
     }
     
     .page-link:hover, .page-item.active .page-link {
-        background-color: #e91e63;
+        background-color: rgb(156, 19, 37);
         color: white;
     }
     
@@ -262,7 +271,7 @@
     }
     
     .filter-header i {
-        color: #e91e63;
+        color: rgb(156, 19, 37);
         font-size: 1.3rem;
     }
     
@@ -302,9 +311,10 @@
     }
     
     .price-input:focus {
-        border-color: #e91e63;
-        outline: none;
-        box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+         border-color: rgb(156, 19, 37);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(142, 28, 36, 0.2);
+       
     }
     
     .price-separator {
@@ -319,7 +329,7 @@
     }
     
     .filter-btn {
-        background-color: #e91e63;
+        background-color: rgb(156, 19, 37);
         color: white;
         border: none;
         padding: 0.7rem 1.5rem;
@@ -333,7 +343,7 @@
     }
     
     .filter-btn:hover {
-        background-color: #d81b60;
+        background-color: rgb(156, 19, 37);
         transform: translateY(-3px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
@@ -394,7 +404,7 @@
     }
     
     .filter-header i {
-        color: #e91e63;
+        color: rgb(156, 19, 37);
         font-size: 1.3rem;
     }
     
@@ -421,7 +431,7 @@
     .slider .progress {
         position: absolute;
         height: 5px;
-        background: #e91e63;
+        background:rgb(156, 19, 37);
         border-radius: 5px;
         left: 25%;
         right: 25%;
@@ -446,7 +456,7 @@
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        background: #e91e63;
+        background:rgb(156, 19, 37);
         border: 3px solid white;
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         cursor: pointer;
@@ -458,7 +468,7 @@
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        background: #e91e63;
+        background: rgb(156, 19, 37);
         border: 3px solid white;
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         cursor: pointer;
@@ -497,7 +507,7 @@
     }
     
     .price-input:focus {
-        border-color: #e91e63;
+        border-color: rgb(156, 19, 37);
         outline: none;
         box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
     }
@@ -514,7 +524,7 @@
     }
     
     .filter-btn {
-        background-color: #e91e63;
+        background-color:rgb(156, 19, 37);
         color: white;
         border: none;
         padding: 0.7rem 1.5rem;
@@ -665,7 +675,7 @@
                 <div class="product-info">
                     <h3 class="product-title">{{ product.name }}</h3>
                     <div class="product-price">{{ product.price }} сом</div>
-                    <button class="btn">Подробнее</button>
+                    <button class="btn" style=" background: rgb(156, 19, 37)">Подробнее</button>
                 </div>
             </a>
         </div>

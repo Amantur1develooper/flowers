@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{%load static%}
 {% block extra_css %}
 <style>
     /* Основные стили */
@@ -24,7 +24,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        background-color: #e91e63;
+        background-color: rgb(156, 19, 37);
         color: white;
         padding: 15px 25px;
         border-radius: 8px;
@@ -88,7 +88,7 @@
     }
     
     /* Цвета для разных категорий */
-    .flowers-btn .button-icon { color: #e91e63; }
+    .flowers-btn .button-icon { color: rgb(156, 19, 37); }
     .potted-btn .button-icon { color: #4caf50; }
     .cakes-btn .button-icon { color: #ff9800; }
     .toys-btn .button-icon { color: #2196f3; }
@@ -198,7 +198,9 @@
     <div class="menu-container">
         <!-- Логотип и приветствие -->
         <div class="logo-section">
-            <div class="logo-large">DonButon</div>
+            <div class="logo-large">          <a href="{% url 'index' %}" class="logo">
+    <img src="{% static 'images/logo2.png' %}" alt="Логотип" class="logo-img">
+</a></div>
             <p class="welcome-text">Добро пожаловать в наш магазин! Выберите категорию товаров или свяжитесь с нами.</p>
         </div>
         
