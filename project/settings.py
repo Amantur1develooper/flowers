@@ -15,7 +15,9 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-TELEGRAM_BOT_TOKEN = '8071433935:AAH7UySRWRyaijG_bvXBb6sgi-Psrix_i1A'
+# TELEGRAM_BOT_TOKEN = '8071433935:AAH7UySRWRyaijG_bvXBb6sgi-Psrix_i1A'
+TELEGRAM_BOT_TOKEN = '7783454104:AAHYbwXKLeZs54GPEe9F5LKrplCdckcErqE'
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 

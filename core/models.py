@@ -325,7 +325,9 @@ class Customer(models.Model):
         validators=[MinValueValidator(0)],
         verbose_name="Баллы"
     )
-    
+    is_paid = models.BooleanField(default=False, verbose_name="Оплачен")
+    self_pickup = models.BooleanField(default=False, verbose_name="Самовывоз")
+
     class Meta:
         verbose_name = "Клиент"
         verbose_name_plural = "Клиенты"

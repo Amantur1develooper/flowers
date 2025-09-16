@@ -16,7 +16,7 @@ def send_daily_report():
         Q(birthday__month=today.month, birthday__day=today.day)
     )
     lines = []
-
+    print(customers_birthdays)
     for customer in customers_birthdays:
         lines.append(f"""
 Имя клиента - {customer.full_name or "не указано"}
@@ -28,6 +28,8 @@ def send_daily_report():
 Любимые цветы - {customer.favorite_flowers or "не указаны"} 
 Заметки - {customer.notes or "нет заметок"}
 Баллы - {customer.point or "нет баллов"}
+Оплачен - {"Да" if customer.is_paid else "Нет"}
+Самовывоз - {"Да" if customer.self_pickup else "Нет"}
         """)
 
     message = (
@@ -35,5 +37,5 @@ def send_daily_report():
         "Дни рождения:\n" +
         "\n".join(lines) or "Нет дней рождения сегодня."
     )
-      
+
     send_telegram_notification(message)
