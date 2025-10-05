@@ -87,6 +87,7 @@ class Product(models.Model):
     featured = models.BooleanField(default=False, verbose_name="Рекомендуемый")
     created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
     updated = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    skidka = models.DecimalField(max_digits=10,decimal_places=2, null=True, blank=True, verbose_name="Скидка((новая цена)сом)")
     
     # Дополнительные поля для цветов
     flowers_included = models.TextField(
@@ -132,8 +133,30 @@ class Product(models.Model):
     
     def get_product_type_display(self):
         return dict(self.PRODUCT_TYPES).get(self.product_type)    
-
-
+    @property
+    def savings_amount(self):
+        """Вычисление суммы экономии при наличии скидки"""
+        if self.has_discount:
+            return self.price - self.final_price
+        return 0
+    @property
+    def has_discount(self):
+        """Проверяет, есть ли скидка у товара"""
+        return self.skidka is not None and self.skidka < self.price
+    
+    @property
+    def discount_percentage(self):
+        """Вычисляет процент скидки"""
+        if self.has_discount:
+            return int(((self.price - self.skidka) / self.price) * 100)
+        return 0
+    
+    @property
+    def final_price(self):
+        """Возвращает итоговую цену (со скидкой или оригинальную)"""
+        return self.skidka if self.has_discount else self.price
+    
+    
 class Review(models.Model):
     product = models.ForeignKey(
         Product, 

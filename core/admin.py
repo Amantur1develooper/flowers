@@ -46,6 +46,7 @@ class ProductAdmin(admin.ModelAdmin):
         'category', 
         'get_product_type_display',
         'price', 
+        "skidka",
         'available',
         'display_image'
     )
@@ -67,6 +68,7 @@ class ProductAdmin(admin.ModelAdmin):
                 'image',
                 'description',
                 'price',
+                'skidka',
                 'available',
                 'featured'
             )

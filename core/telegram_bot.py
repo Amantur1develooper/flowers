@@ -2,38 +2,83 @@ import requests
 from django.conf import settings
 from .models import TelegramManager
 
+import requests
+from django.conf import settings
+from .models import TelegramManager
 
-def send_telegram_notification(message):
-    """Отправка уведомления всем активным менеджерам"""
+def send_telegram_notification(message, document_path=None):
+    """Send notification to all active Telegram managers, optionally with a document."""
     if not settings.TELEGRAM_BOT_TOKEN:
         return False
     
-    active_managers = TelegramManager.objects.filter(
-        is_active=True,
-        notify_orders=True
-    )
+    active_managers = TelegramManager.objects.filter(is_active=True, notify_orders=True)
     
     if not active_managers.exists():
         return False
     
-    url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
     success_count = 0
-
+    bot_token = settings.TELEGRAM_BOT_TOKEN
+    
     for manager in active_managers:
-        payload = {
+        # First, send the text message
+        url_text = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        payload_text = {
             'chat_id': manager.chat_id,
             'text': message,
             'parse_mode': 'HTML'
         }
         
         try:
-            response = requests.post(url, json=payload)
+            response = requests.post(url_text, json=payload_text)
             if response.status_code == 200:
                 success_count += 1
         except Exception as e:
-            print(f"Error sending Telegram notification to {manager.chat_id}: {e}")
+            print(f"Error sending Telegram message to {manager.chat_id}: {e}")
+            continue
+        
+        # Then, send the document if provided
+        if document_path:
+            try:
+                with open(document_path, 'rb') as file:
+                    url_doc = f"https://api.telegram.org/bot{bot_token}/sendDocument"
+                    files = {'document': file}
+                    data = {'chat_id': manager.chat_id}
+                    response = requests.post(url_doc, files=files, data=data)
+            except Exception as e:
+                print(f"Error sending document to {manager.chat_id}: {e}")
     
     return success_count > 0
+# def send_telegram_notification(message):
+#     """Отправка уведомления всем активным менеджерам"""
+#     if not settings.TELEGRAM_BOT_TOKEN:
+#         return False
+    
+#     active_managers = TelegramManager.objects.filter(
+#         is_active=True,
+#         notify_orders=True
+#     )
+    
+#     if not active_managers.exists():
+#         return False
+    
+#     url = f"https://api.telegram.org/bot{settings.TELEGRAM_BOT_TOKEN}/sendMessage"
+#     success_count = 0
+
+#     for manager in active_managers:
+#         payload = {
+#             'chat_id': manager.chat_id,
+#             'text': message,
+#             'parse_mode': 'HTML'
+#         }
+        
+#         try:
+#             response = requests.post(url, json=payload)
+#             if response.status_code == 200:
+#                 success_count += 1
+#         except Exception as e:
+#             print(f"Error sending Telegram notification to {manager.chat_id}: {e}")
+    
+#     return success_count > 0
 
 
 def set_webhook():

@@ -50,7 +50,11 @@ urlpatterns = [
     path('customer-list/', views.CustomerListView.as_view(), name='customer-list'),
     path('customer-add/', views.CustomerCreateView.as_view(), name='customer-add'),
     path('customer-edit/<int:pk>/', views.CustomerUpdateView.as_view(), name='customer-edit'),
-]
+
+path('cart/', views.cart_detail, name='cart_detail'),
+path('cart/add/<int:product_id>/', views.cart_operations, {'operation': 'add'}, name='add_to_cart'),
+path('cart/remove/<int:product_id>/', views.cart_operations, {'operation': 'remove'}, name='remove_from_cart'),
+path('cart/update/<int:product_id>/', views.cart_operations, {'operation': 'update'}, name='update_cart_item'),]
 
 
 if settings.DEBUG:

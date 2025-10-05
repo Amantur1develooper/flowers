@@ -2,6 +2,62 @@
 
 {% block extra_css %}
 <style>
+    /* Стили для скидок */
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #dc3545;
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+    
+    .price-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .original-price {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 1rem;
+    }
+    
+    .discount-price {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+    
+    .final-price {
+        color: rgb(156, 19, 37);
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .saving-badge {
+        background-color: #28a745;
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 15px;
+        font-size: 0.7rem;
+        font-weight: 500;
+    }
+    
+    .product-card {
+        position: relative;
+        /* остальные стили остаются без изменений */
+    }
+</style>
+<style>
     
     .catalog-header {
         background-color: #f8f9fa;
@@ -137,6 +193,7 @@
     margin-bottom: 3rem;
 }
     .product-card {
+         position: relative;
     background-color: var(--white);
     border-radius: 10px;
     overflow: hidden;
@@ -660,29 +717,51 @@
 </div>
 {% endwith %}
     <!-- Фильтр по ценам -->
-
-    <!-- Сетка товаров -->
-    <div class="products-grid">
-        {% for product in products %}
-        <div class="product-card">
-            <div class="product-badge">
-                {{ product.get_product_type_display }}
-            </div>
-            <a href="{% url 'product_detail' product.id product.slug %}">
-                <div class="product-img-container">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">{{ product.name }}</h3>
-                    <div class="product-price">{{ product.price }} сом</div>
-                    <button class="btn" style=" background: rgb(156, 19, 37)">Подробнее</button>
-                </div>
-            </a>
+<!-- Сетка товаров -->
+<div class="products-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <!-- Бейдж типа товара -->
+        <div class="product-badge">
+            {{ product.get_product_type_display }}
         </div>
-        {% empty %}
-        <p>Товары в этой категории отсутствуют</p>
-        {% endfor %}
+        
+        <!-- Бейдж скидки -->
+        {% if product.has_discount %}
+        <div class="discount-badge">
+            -{{ product.discount_percentage }}%
+        </div>
+        {% endif %}
+        
+        <a href="{% url 'product_detail' product.id product.slug %}">
+            <div class="product-img-container">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">{{ product.name }}</h3>
+                
+                <!-- Блок с ценами -->
+                <div class="price-container">
+                    {% if product.has_discount %}
+                        <span class="original-price">{{ product.price }} сом</span>
+                        <span class="discount-price">{{ product.final_price }} сом</span>
+                        <span class="saving-badge">Экономия {{ product.savings_amount|floatformat:0 }} сом</span>
+
+                    {% else %}
+                        <span class="final-price">{{ product.price }} сом</span>
+                    {% endif %}
+                </div>
+                
+                <button class="btn" style="background: rgb(156, 19, 37)">Подробнее</button>
+            </div>
+        </a>
     </div>
+    {% empty %}
+    <p>Товары в этой категории отсутствуют</p>
+    {% endfor %}
+</div>
+    <!-- Сетка товаров -->
+   
      <!-- Пагинация -->
      {% if products.paginator.num_pages > 1 %}
      <div class="pagination">

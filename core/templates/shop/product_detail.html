@@ -203,15 +203,23 @@
                 </div>
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-image" id="mainImage">
             </div>
-            
-            <!-- Информация о товаре -->
-            <div class="product-info">
-                <h1 class="product-title">{{ product.name }}</h1>
-                <div class="product-price">{{ product.price }} сом</div>
-                
-                <div class="product-description">
-                    {{ product.description|linebreaks }}
-                </div>
+            <div class="product-price">
+    {% if product.has_discount %}
+    <div class="price-container" style="font-size: 1.5rem;">
+        <span class="original-price" style="font-size: 1.2rem;">{{ product.price }} сом</span>
+        <span class="discount-price">{{ product.final_price }} сом</span>
+        <span class="discount-badge" style="position: static; font-size: 1rem;">
+            -{{ product.discount_percentage }}%
+        </span>
+    </div>
+    <p class="saving-badge" style="font-size: 1rem;">
+                        <span class="saving-badge">Экономия  сом</span>
+
+        Вы экономите {{ product.savings_amount|floatformat:0 }} сом
+    </p>
+    {% else %}
+    <span class="final-price" style="font-size: 1.8rem;">{{ product.price }} сом</span>
+    {% endif %}
 
                 <form method="post" action="{% url 'cart_operations' 'add' product.id %}" class="add-to-cart">
                     {% csrf_token %}
@@ -236,8 +244,9 @@
                         <span style="color: red;">Нет в наличии</span>
                         {% endif %}
                     </p>
-                </div>
-            </div>
+</div>
+            <!-- Информация о товаре -->
+           
         </div>
         
         <!-- Похожие товары -->

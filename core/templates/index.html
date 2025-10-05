@@ -132,7 +132,28 @@
         margin-bottom: 1rem;
         color: var(--primary-color);
     }
+     .map-btn {
+        display: inline-block;
+        background-color: rgb(156, 19, 37);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
     
+    .map-btn:hover {
+        background-color: #c2185b;
+    }
+    
+    .product-badge {
+        background-color: #f8f9fa;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        border: 1px solid rgb(156, 19, 37);
+        color: rgb(156, 19, 37);
+    }
     .shop-info p {
         margin-bottom: 0.5rem;
         display: flex;
@@ -275,7 +296,11 @@
                     <p><i class="fas fa-map-marker-alt"></i> {{ shop.address }}</p>
                     <p><i class="fas fa-phone"></i> {{ shop.phone }}</p>
                     <p><i class="fas fa-clock"></i> {{ shop.work_hours }}</p>
-                    <p><a target="_blank" href="{{ shop.map_link}}"> <i class="fas fa-subway"> </i> Карта</a></p>
+                    {% if shop.map_link %}
+            <a href="{{ shop.map_link }}" target="_blank" class="map-btn">
+                <i class="fas fa-map"></i> Посмотреть на карте
+            </a>
+            {% endif %}
                 </div>
             </div>
             {% endfor %}

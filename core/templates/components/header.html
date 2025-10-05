@@ -3,11 +3,14 @@
 <header>
     <div class="container">
         <div class="header-content">
-            
+            <div style="display: flex;gap:5px;">
             <a href="{% url 'index' %}" class="logo">
     <img src="{% static 'images/logo2.png' %}" alt="Логотип" class="logo-img">
 </a>
-            
+         <a href="{% url 'index' %}" class="logo">
+    <img src="{% static 'images/logo3.png' %}" alt="Логотип" class="logo-img">
+</a>
+            </div>
             <button class="nav-toggle" id="navToggle">
                 <i class="fas fa-bars"></i>
             </button>
