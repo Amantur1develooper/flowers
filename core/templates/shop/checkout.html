@@ -37,7 +37,7 @@
     
     .required-field::after {
         content: " *";
-        color: #e91e63;
+        color: rgb(156, 19, 37);
     }
     
     .order-summary {
@@ -57,13 +57,13 @@
     .order-total {
         font-weight: bold;
         font-size: 1.2rem;
-        color: #e91e63;
+        color: rgb(156, 19, 37);
         margin-top: 1rem;
         text-align: right;
     }
     
     .submit-btn {
-        background-color: #e91e63;
+        background-color:rgb(156, 19, 37);
         color: white;
         border: none;
         padding: 1rem 2rem;
@@ -149,9 +149,10 @@
             <textarea id="comment" name="comment" class="form-control" rows="3"></textarea>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" >
+            
             <label class="form-label">Чек</label>
-            <input type="file" id="receipt" name="receipt" class="form-control">
+            <input style="padding-bottom: 10px;" type="file" id="receipt" name="receipt" class="form-control">
         </div>
 
         <button type="submit" class="submit-btn">Подтвердить заказ</button>

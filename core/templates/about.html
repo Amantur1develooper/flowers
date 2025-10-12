@@ -118,7 +118,7 @@
 <section class="about-hero">
     <div class="about-content">
         <h1>О нашем магазине</h1>
-        <p>Дарим радость и уют с 2010 года</p>
+        <p>Дарим радость и уют с 1985 года</p>
     </div>
 </section>
 
@@ -130,7 +130,7 @@
             <h2>Наша история</h2>
         </div>
         <div class="about-text">
-            <p>Мы начали наш бизнес в 2010 году с небольшого цветочного магазина в центре Оша. 
+            <p>Мы начали наш бизнес в 1985 году с небольшого цветочного магазина в центре Оша. 
             С тех пор мы выросли в крупную сеть, предлагающую не только прекрасные цветы, 
             но и уникальные игрушки, а также восхитительные десерты.</p>
             
@@ -153,7 +153,7 @@
                     <i class="fas fa-award"></i>
                 </div>
                 <h3>Опыт</h3>
-                <p>Более 10 лет дарим радость нашим клиентам</p>
+                <p>Более 40 лет дарим радость нашим клиентам</p>
             </div>
             
             <div class="feature-item">
@@ -161,7 +161,7 @@
                     <i class="fas fa-smile"></i>
                 </div>
                 <h3>Удовольствие</h3>
-                <p>Более 5000 довольных клиентов по всему Ошу</p>
+                <p>Более 50000 довольных клиентов по всему Ошу</p>
             </div>
         </div>
     </section>
@@ -208,29 +208,22 @@
         </div>
         
         <div class="features">
+            {% for item in shops %}
             <div class="feature-item">
                 <div class="feature-icon">
+
                     <i class="fas fa-store"></i>
                 </div>
-                <h3>Центральный магазин</h3>
-                <p>ул. Ленина, 123<br>Ежедневно с 9:00 до 20:00</p>
+                <h3>{{item.name}}</h3>
+                <i class="fas fa-map-marker-alt"></i> {{ item.address }}
+                    <p><i class="fas fa-phone"></i> {{ item.phone }}</p>
+                    <p><i class="fas fa-clock"></i> {{ item.work_hours }}</p>
+               
             </div>
+            {% endfor %}
             
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-store"></i>
-                </div>
-                <h3>Филиал на юге</h3>
-                <p>ул. Кирова, 45<br>Ежедневно с 9:00 до 19:00</p>
-            </div>
             
-            <div class="feature-item">
-                <div class="feature-icon">
-                    <i class="fas fa-store"></i>
-                </div>
-                <h3>Филиал на севере</h3>
-                <p>ул. Московская, 67<br>Ежедневно с 10:00 до 18:00</p>
-            </div>
+            
         </div>
     </section>
 </div>

@@ -65,7 +65,10 @@ def index(request):
 
 
 def about(request):
-    return render(request, 'about.html')
+    context = {
+        'shops': Shop.objects.all(), 
+    }
+    return render(request, 'about.html', context)
 
 
 def delivery(request):
@@ -128,7 +131,7 @@ def catalog_view(request, main_category_slug=None, category_slug=None):
             default=Value(0),
             output_field=IntegerField()
         )
-    ).order_by('-has_discount_order', '-created')
+    ).order_by('?')
     paginator = Paginator(filtered_products, 12)
     page_obj = paginator.get_page(request.GET.get('page'))
     

@@ -225,6 +225,7 @@
         <p class="savings-amount">Вы экономите {{ total_savings }} сом</p>
         {% endif %}
         
+        <a href="{% url 'catalog' %}" class="checkout-btn"> Назад в каталог</a>
         <a href="{% url 'checkout' %}" class="checkout-btn">Оформить заказ</a>
     </div>
     {% endif %}
