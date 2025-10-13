@@ -1,5 +1,6 @@
 import random
 from django.db.models import Min, Max, Q
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -10,6 +11,72 @@ from django.urls import reverse_lazy
 from .telegram_bot import send_telegram_notification
 from .models import Product, Category, MainCategory, Order, OrderItem, Shop, Review, Customer
 from .forms import CustomerForm
+# views.py - добавим в начало
+def get_product_by_id(product_id, model_type='product'):
+    """
+    Универсальная функция для получения товара по ID и типу
+    """
+    if model_type == 'akchii':
+        return get_object_or_404(Akchii, id=product_id)
+    else:
+        return get_object_or_404(Product, id=product_id)
+
+
+def get_cart_products(cart):
+    """
+    Универсальная функция для получения товаров из корзины
+    Возвращает список товаров и общую сумму
+    """
+    products = []
+    total_price = 0
+    total_original_price = 0
+    total_savings = 0
+
+    for key, quantity in cart.items():
+        try:
+            # Определяем тип модели и ID
+            if '_' in key:
+                model_type, product_id = key.split('_')
+            else:
+                model_type, product_id = 'product', key
+
+            # Получаем объект товара
+            if model_type == 'akchii':
+                product = Akchii.objects.get(id=int(product_id), available=True)
+            else:
+                product = Product.objects.get(id=int(product_id), available=True)
+
+            # Цены
+            unit_price = product.final_price
+            original_unit_price = product.price
+
+            item_total = unit_price * quantity
+            original_item_total = original_unit_price * quantity
+            item_savings = original_item_total - item_total
+
+            # Добавляем данные в список
+            products.append({
+                'product': product,
+                'model_type': model_type,
+                'quantity': quantity,
+                'unit_price': unit_price,
+                'original_unit_price': original_unit_price,
+                'item_total': item_total,
+                'original_item_total': original_item_total,
+                'item_savings': item_savings,
+            })
+
+            # Считаем общие итоги
+            total_price += item_total
+            total_original_price += original_item_total
+            total_savings += item_savings
+
+        except (Product.DoesNotExist, Akchii.DoesNotExist, ValueError) as e:
+            # Логируем и пропускаем невалидный элемент
+            print(f"Внимание: элемент корзины {key} не найден: {e}")
+            continue
+
+    return products, total_price, total_original_price, total_savings
 
 
 
@@ -156,87 +223,60 @@ def product_detail(request, id, slug):
     return render(request, 'shop/product_detail.html', context)
 
 
-
+# views.py - заменим cart_operations и cart_operations2
 def cart_operations(request, product_id, operation):
-    """Handle all cart operations (add/remove/update) with discount support"""
-    product = get_object_or_404(Product, id=product_id)
+    """Универсальная функция для операций с корзиной (работает с Product и Akchii)"""
+    # Определяем тип модели из POST или GET параметров
+    model_type = request.POST.get('model_type') or request.GET.get('model_type', 'product')
+    
+    # Получаем товар
+    product = get_product_by_id(product_id, model_type)
+    
     cart = request.session.get('cart', {})
-    str_id = str(product_id)
+    
+    # Создаем уникальный ключ для корзины (включая тип модели)
+    cart_key = f"{model_type}_{product_id}"
     
     if operation == 'add':
         quantity = int(request.POST.get('quantity', 1))
-        cart[str_id] = cart.get(str_id, 0) + quantity
+        cart[cart_key] = cart.get(cart_key, 0) + quantity
         msg = f'Товар "{product.name}" добавлен в корзину'
+        
+        # Если запрос AJAX, возвращаем JSON
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            cart_items_count = sum(cart.values())
+            request.session['cart_items_count'] = cart_items_count
+            request.session.modified = True
+            
+            return JsonResponse({
+                'success': True,
+                'message': msg,
+                'cart_items_count': cart_items_count
+            })
+            
     elif operation == 'remove':
-        if str_id in cart:
-            del cart[str_id]
+        if cart_key in cart:
+            del cart[cart_key]
             msg = f'Товар "{product.name}" удален из корзины'
     elif operation == 'update' and request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
         if quantity > 0:
-            cart[str_id] = quantity
+            cart[cart_key] = quantity
             msg = f'Количество товара "{product.name}" обновлено'
         else:
-            del cart[str_id]
+            del cart[cart_key]
             msg = f'Товар "{product.name}" удален из корзины'
     else:
         return redirect('cart_detail')
     
     request.session['cart'] = cart
     request.session.modified = True
+    
+    # Для обычных запросов используем messages и редирект
     messages.success(request, msg)
     return redirect('cart_detail')
-
-
-def cart_detail(request):
-    """Display cart contents with discount support"""
-    cart = request.session.get('cart', {})
-    products = []
-    total_price = 0
-    total_original_price = 0  # Сумма без скидок
-    total_savings = 0  # Общая экономия
-    
-    for product_id, quantity in cart.items():
-        product = get_object_or_404(Product, id=int(product_id))
-        
-        # Используем финальную цену (со скидкой если есть)
-        unit_price = product.final_price
-        item_total = unit_price * quantity
-        
-        # Рассчитываем оригинальную цену для отображения скидки
-        original_unit_price = product.price
-        original_item_total = original_unit_price * quantity
-        
-        # Рассчитываем экономию для этого товара
-        item_savings = original_item_total - item_total
-        
-        products.append({
-            'product': product,
-            'quantity': quantity,
-            'unit_price': unit_price,
-            'total': item_total,
-            'original_unit_price': original_unit_price,
-            'original_total': original_item_total,
-            'savings': item_savings,
-            'has_discount': product.has_discount,
-            'discount_percentage': product.discount_percentage,
-        })
-        
-        total_price += item_total
-        total_original_price += original_item_total
-        total_savings += item_savings
-
-    items_count = sum(item['quantity'] for item in products)
-    request.session['cart_items_count'] = items_count
-    
-    return render(request, 'shop/cart.html', {
-        'cart_items': products,
-        'total_price': total_price,
-        'total_original_price': total_original_price,
-        'total_savings': total_savings,
-    })
 # def cart_operations(request, product_id, operation):
-#     """Handle all cart operations (add/remove/update)"""
+#     """Handle all cart operations (add/remove/update) with discount support"""
 #     product = get_object_or_404(Product, id=product_id)
 #     cart = request.session.get('cart', {})
 #     str_id = str(product_id)
@@ -264,130 +304,31 @@ def cart_detail(request):
 #     request.session.modified = True
 #     messages.success(request, msg)
 #     return redirect('cart_detail')
-
-
-# def cart_detail(request):
-#     """Display cart contents"""
-#     cart = request.session.get('cart', {})
-#     products = []
-#     total_price = 0
-    
-#     for product_id, quantity in cart.items():
-#         product = get_object_or_404(Product, id=int(product_id))
-#         item_total = product.price * quantity
-#         products.append({
-#             'product': product,
-#             'quantity': quantity,
-#             'total': item_total
-#         })
-#         total_price += item_total
-
-#     items_count = sum(item['quantity'] for item in products)
-#     request.session['cart_items_count'] = items_count
-    
-#     return render(request, 'shop/cart.html', {
-#         'cart_items': products,
-#         'total_price': total_price
-#     })
-
-def checkout(request):
-    """Handle order checkout with receipt support"""
+# views.py - заменим cart_detail и cart_detail2
+def cart_detail(request):
+    """Универсальная функция для отображения корзины"""
     cart = request.session.get('cart', {})
     
-    if not cart:
-        messages.warning(request, "Ваша корзина пуста")
-        return redirect('cart_detail')
+    # Получаем все товары из корзины (и Product и Akchii)
+    cart_items, total_price, total_original_price, total_savings = get_cart_products(cart)
     
-    # Calculate order totals (your existing code)
-    products = []
-    total_price = 0
-    # ... keep your existing cart calculation code ...
+    items_count = sum(item['quantity'] for item in cart_items)
+    request.session['cart_items_count'] = items_count
     
-    if request.method == 'POST':
-        # Validate required fields
-        required_fields = ['name', 'phone']
-        if not all(request.POST.get(field) for field in required_fields):
-            messages.error(request, "Пожалуйста, заполните обязательные поля")
-            return redirect('checkout')
-        
-        # Create the order
-        order = Order.objects.create(
-            full_name=request.POST.get('name'),
-            phone=request.POST.get('phone'),
-            address=request.POST.get('address', ''),
-            delivery_type=request.POST.get('delivery_type', 'pickup'),
-            comment=request.POST.get('comment', ''),
-            payment_method=request.POST.get('payment_method', 'cash'),
-            check_file=request.FILES.get('receipt')  # This handles file upload
-        )
-        
-        # Create order items
-        for product_id, quantity in cart.items():
-            product = get_object_or_404(Product, id=int(product_id))
-            final_price = product.final_price
-            
-            OrderItem.objects.create(
-                order=order,
-                product=product,
-                quantity=quantity,
-                price=final_price
-            )
-        
-        # Prepare order details for notification
-        order_details = {
-            'id': order.id,
-            'name': order.full_name,
-            'phone': order.phone,
-            'address': order.address,
-            'delivery_type': order.delivery_type,
-            'payment_method': order.get_payment_method_display(),
-            'comment': order.comment,
-            'has_receipt': bool(order.check_file),
-            'items': [{
-                'name': item.product.name,
-                'quantity': item.quantity,
-                'price': item.price,
-                'total': item.get_cost()
-            } for item in order.items.all()],
-            'total_price': total_price,
-        }
-        
-        # Send Telegram notification with optional receipt
-        document_path = None
-        if order.check_file:
-            # Get the full path to the uploaded file
-            document_path = order.check_file.path
-        
-        message = format_telegram_message(order_details)
-        if send_telegram_notification(message, document_path):
-            messages.success(request, "Заказ успешно оформлен! Уведомление отправлено менеджерам.")
-        else:
-            messages.success(request, "Заказ оформлен! Не удалось отправить уведомление менеджерам.")
-        
-        # Clear the cart
-        request.session['cart'] = {}
-        request.session.modified = True
-        
-        return redirect('order_success')
-    
-    return render(request, 'shop/checkout.html', {
-        'cart_items': products,
+    return render(request, 'shop/cart.html', {
+        'cart_items': cart_items,
         'total_price': total_price,
+        'total_original_price': total_original_price,
+        'total_savings': total_savings,
     })
 
-# def checkout(request):
-#     """Handle order checkout with discount support"""
+# def cart_detail(request):
+#     """Display cart contents with discount support"""
 #     cart = request.session.get('cart', {})
-    
-#     if not cart:
-#         messages.warning(request, "Ваша корзина пуста")
-#         return redirect('cart_detail')
-    
-#     # Prepare products for display with discount support
 #     products = []
 #     total_price = 0
-#     total_original_price = 0
-#     total_savings = 0
+#     total_original_price = 0  # Сумма без скидок
+#     total_savings = 0  # Общая экономия
     
 #     for product_id, quantity in cart.items():
 #         product = get_object_or_404(Product, id=int(product_id))
@@ -412,167 +353,201 @@ def checkout(request):
 #             'original_total': original_item_total,
 #             'savings': item_savings,
 #             'has_discount': product.has_discount,
+#             'discount_percentage': product.discount_percentage,
 #         })
         
 #         total_price += item_total
 #         total_original_price += original_item_total
 #         total_savings += item_savings
+
+#     items_count = sum(item['quantity'] for item in products)
+#     request.session['cart_items_count'] = items_count
     
-#     if request.method == 'POST':
-#         required_fields = ['name', 'phone']
-#         if not all(request.POST.get(field) for field in required_fields):
-#             messages.error(request, "Пожалуйста, заполните обязательные поля")
-#             return redirect('checkout')
-        
-#         # Создаем заказ
-#         order = Order.objects.create(
-#             full_name=request.POST.get('name'),
-#             phone=request.POST.get('phone'),
-#             address=request.POST.get('address', ''),
-#             delivery_type=request.POST.get('delivery_type', 'pickup'),
-#             comment=request.POST.get('comment', ''),
-#             check_file=request.FILES.get('receipt', None),
-#         )
-
-#         # Создаем элементы заказа с учетом скидок
-#         order_total_price = 0
-#         for product_id, quantity in cart.items():
-#             product = get_object_or_404(Product, id=int(product_id))
-            
-#             # Используем финальную цену (со скидкой)
-#             final_price = product.final_price
-#             item_total = final_price * quantity
-            
-#             OrderItem.objects.create(
-#                 order=order,
-#                 product=product,
-#                 quantity=quantity,
-#                 price=final_price  # Сохраняем цену с учетом скидки
-#             )
-#             order_total_price += item_total
-
-#         # Обновляем общую сумму заказа
-#         # order.total_price = order_total_price
-#         order.save()
-
-#         # Формируем детали заказа для уведомления
-#         order_details = {
-#             'name': order.full_name,
-#             'phone': order.phone,
-#             'address': order.address,
-#             'delivery_type': order.delivery_type,
-#             'comment': order.comment,
-#             'items': [{
-#                 'name': item.product.name,
-#                 'quantity': item.quantity,
-#                 'original_price': item.product.price,  # Оригинальная цена
-#                 'final_price': item.price,  # Цена со скидкой
-#                 'total': item.get_cost(),
-#                 'has_discount': item.product.has_discount,
-#                 'discount_percentage': item.product.discount_percentage if item.product.has_discount else 0,
-#             } for item in order.items.all()],
-#             'total_price': order_total_price,
-#             'total_savings': total_savings,
-#         }
-
-#         # Отправляем уведомление в Telegram
-#         if send_telegram_notification(format_telegram_message(order_details)):
-#             messages.success(request, "Заказ успешно оформлен! Мы свяжемся с вами в ближайшее время.")
-#         else:
-#             messages.success(request, "Заказ оформлен! Примечание: не удалось отправить уведомление менеджерам.")
-
-#         # Очищаем корзину
-#         request.session['cart'] = {}
-#         request.session.modified = True
-        
-#         return redirect('order_success')
-
-#     return render(request, 'shop/checkout.html', {
+#     return render(request, 'shop/cart.html', {
 #         'cart_items': products,
 #         'total_price': total_price,
 #         'total_original_price': total_original_price,
 #         'total_savings': total_savings,
 #     })
-# # def checkout(request):
-#     """Handle order checkout"""
+
+# views.py - обновим checkout функцию
+def checkout(request):
+    """Универсальная функция оформления заказа (работает с Product и Akchii)"""
+    cart = request.session.get('cart', {})
+    
+    if not cart:
+        messages.warning(request, "Ваша корзина пуста")
+        return redirect('cart_detail')
+    
+    # Получаем товары из корзины
+    cart_items, total_price, total_original_price, total_savings = get_cart_products(cart)
+    
+    if not cart_items:
+        messages.warning(request, "В вашей корзине нет доступных товаров")
+        return redirect('cart_detail')
+    
+    if request.method == 'POST':
+        # Валидация обязательных полей
+        required_fields = ['name', 'phone']
+        if not all(request.POST.get(field) for field in required_fields):
+            messages.error(request, "Пожалуйста, заполните обязательные поля")
+            return redirect('checkout')
+        
+        # Создаем заказ
+        order = Order.objects.create(
+            full_name=request.POST.get('name'),
+            phone=request.POST.get('phone'),
+            address=request.POST.get('address', ''),
+            delivery_type=request.POST.get('delivery_type', 'pickup'),
+            comment=request.POST.get('comment', ''),
+            payment_method=request.POST.get('payment_method', 'cash'),
+            check_file=request.FILES.get('receipt')
+        )
+        
+        # Создаем элементы заказа
+        for item in cart_items:
+            product = item['product']
+            quantity = item['quantity']
+            final_price = item['unit_price']
+            model_type = item['model_type']
+            
+            OrderItem.objects.create(
+                order=order,
+                product=product if model_type == 'product' else None,
+                akchii=product if model_type == 'akchii' else None,
+                quantity=quantity,
+                price=final_price
+            )
+        
+        # Подготавливаем детали заказа для Telegram
+        order_details = {
+            'id': order.id,
+            'name': order.full_name,
+            'phone': order.phone,
+            'address': order.address,
+            'delivery_type': order.delivery_type,
+            'payment_method': order.get_payment_method_display(),
+            'comment': order.comment,
+            'has_receipt': bool(order.check_file),
+            'items': [{
+                'name': f"{item['product'].name} {'(АКЦИЯ)' if item['model_type'] == 'akchii' else ''}",
+                'quantity': item['quantity'],
+                'price': item['unit_price'],
+                'total': item['item_total']
+            } for item in cart_items],
+            'total_price': total_price,
+        }
+        
+        # Отправляем уведомление в Telegram
+        document_path = None
+        if order.check_file:
+            document_path = order.check_file.path
+        
+        message = format_telegram_message(order_details)
+        if send_telegram_notification(message, document_path):
+            messages.success(request, "Заказ успешно оформлен! Уведомление отправлено менеджерам.")
+        else:
+            messages.success(request, "Заказ оформлен! Не удалось отправить уведомление менеджерам.")
+        
+        # Очищаем корзину
+        request.session['cart'] = {}
+        request.session.modified = True
+        
+        return redirect('order_success')
+    
+    return render(request, 'shop/checkout.html', {
+        'cart_items': cart_items,
+        'total_price': total_price,
+    })
+    
+    
+# def checkout(request):
+#     """Handle order checkout with receipt support"""
 #     cart = request.session.get('cart', {})
     
 #     if not cart:
 #         messages.warning(request, "Ваша корзина пуста")
 #         return redirect('cart_detail')
     
-#     # Prepare products for display
+#     # Calculate order totals (your existing code)
 #     products = []
 #     total_price = 0
-    
-#     for product_id, quantity in cart.items():
-#         product = get_object_or_404(Product, id=int(product_id))
-#         item_total = product.price * quantity
-#         products.append({
-#             'product': product,
-#             'quantity': quantity,
-#             'total': item_total
-#         })
-#         total_price += item_total
+#     # ... keep your existing cart calculation code ...
     
 #     if request.method == 'POST':
+#         # Validate required fields
 #         required_fields = ['name', 'phone']
 #         if not all(request.POST.get(field) for field in required_fields):
 #             messages.error(request, "Пожалуйста, заполните обязательные поля")
 #             return redirect('checkout')
         
-#         # print(request.FILES)
-
-#         # print(request.FILES.get('receipt', None))
-
+#         # Create the order
 #         order = Order.objects.create(
 #             full_name=request.POST.get('name'),
 #             phone=request.POST.get('phone'),
 #             address=request.POST.get('address', ''),
 #             delivery_type=request.POST.get('delivery_type', 'pickup'),
 #             comment=request.POST.get('comment', ''),
-#             check_file=request.FILES.get('receipt', None),
+#             payment_method=request.POST.get('payment_method', 'cash'),
+#             check_file=request.FILES.get('receipt')  # This handles file upload
 #         )
-
-#         total_price = 0
+        
+#         # Create order items
 #         for product_id, quantity in cart.items():
 #             product = get_object_or_404(Product, id=int(product_id))
-#             item_total = product.price * quantity
+#             final_price = product.final_price
+            
 #             OrderItem.objects.create(
 #                 order=order,
 #                 product=product,
 #                 quantity=quantity,
-#                 price=product.price
+#                 price=final_price
 #             )
-#             total_price += item_total
-
+        
+#         # Prepare order details for notification
 #         order_details = {
+#             'id': order.id,
 #             'name': order.full_name,
 #             'phone': order.phone,
 #             'address': order.address,
 #             'delivery_type': order.delivery_type,
+#             'payment_method': order.get_payment_method_display(),
 #             'comment': order.comment,
+#             'has_receipt': bool(order.check_file),
 #             'items': [{
 #                 'name': item.product.name,
 #                 'quantity': item.quantity,
 #                 'price': item.price,
 #                 'total': item.get_cost()
 #             } for item in order.items.all()],
-#             'total_price': total_price
+#             'total_price': total_price,
 #         }
-
-#         if send_telegram_notification(format_telegram_message(order_details)):
-#             messages.success(request, "Заказ успешно оформлен! Мы свяжемся с вами в ближайшее время.")
+        
+#         # Send Telegram notification with optional receipt
+#         document_path = None
+#         if order.check_file:
+#             # Get the full path to the uploaded file
+#             document_path = order.check_file.path
+        
+#         message = format_telegram_message(order_details)
+#         if send_telegram_notification(message, document_path):
+#             messages.success(request, "Заказ успешно оформлен! Уведомление отправлено менеджерам.")
 #         else:
-#             messages.success(request, "Заказ оформлен! Примечание: не удалось отправить уведомление менеджерам.")
-
+#             messages.success(request, "Заказ оформлен! Не удалось отправить уведомление менеджерам.")
+        
+#         # Clear the cart
 #         request.session['cart'] = {}
+#         request.session.modified = True
+        
 #         return redirect('order_success')
-
+    
 #     return render(request, 'shop/checkout.html', {
 #         'cart_items': products,
-#         'total_price': total_price
+#         'total_price': total_price,
 #     })
+
+
+
 
 
 def order_success(request):
@@ -627,38 +602,8 @@ def crm_view(request, template):
 
 
 
-# def format_telegram_message(order_details):
-#     """Форматирование сообщения для Telegram с учетом скидок"""
-#     items_text = "\n".join(
-#         f"➡ {item['name']} - {item['quantity']} шт. "
-#         f"({item['original_price']} → {item['final_price']} сом) = {item['total']} сом"
-#         + (f" 🔥 -{item['discount_percentage']}%" if item['has_discount'] else "")
-#         for item in order_details['items']
-#     )
-    
-#     delivery_text = (
-#         f"🚚 Адрес доставки: {order_details['address']}" 
-#         if order_details['delivery_type'] != 'pickup' 
-#         else "🏪 Самовывоз"
-#     )
-    
-#     savings_text = ""
-#     if order_details.get('total_savings', 0) > 0:
-#         savings_text = f"\n💰 Экономия: {order_details['total_savings']} сом"
-    
-#     return f"""
-# <b>Новый заказ!</b>
 
-# 👤 <b>Клиент:</b> {order_details['name']}
-# 📞 <b>Телефон:</b> {order_details['phone']}
-# {delivery_text}
-# 💬 <b>Комментарий:</b> {order_details['comment'] or 'нет комментария'}
 
-# <b>Заказ:</b>
-# {items_text}
-
-# <b>Итого к оплате:</b> {order_details['total_price']} сом{savings_text}
-# """
 
 def format_telegram_message(order_details):
     """Format order details for Telegram notification with HTML formatting"""
@@ -691,32 +636,7 @@ def format_telegram_message(order_details):
 
 💬 <b>Комментарий:</b> {order_details['comment'] or 'нет'}
 """
-# def format_telegram_message(order_details):
-#     """Format order details for Telegram"""
-#     items_text = "\n".join(
-#         f"➡ {item['name']} - {item['quantity']} × {item['price']} сом = {item['total']} сом"
-#         for item in order_details['items']
-#     )
-    
-#     delivery_text = (
-#         f"🚚 Доставка: {order_details['address']}" 
-#         if order_details['delivery_type'] != 'self_pickup' 
-#         else "🏪 Самовывоз"
-#     )
-    
-#     return f"""
-# <b>Новый заказ!</b>
 
-# 👤 <b>Клиент:</b> {order_details['name']}
-# 📞 <b>Телефон:</b> {order_details['phone']}
-# {delivery_text}
-# 💬 <b>Комментарий:</b> {order_details['comment'] or 'нет комментария'}
-
-# <b>Заказ:</b>
-# {items_text}
-
-# <b>Итого:</b> {order_details['total_price']} сом
-# """
 
 
 def main_menu(request):
@@ -727,3 +647,222 @@ def main_menu(request):
         'main_categories': main_categories,
     }
     return render(request, 'shop/main_menu.html', context)
+
+
+
+from django.shortcuts import render
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q, Avg, Max
+from .models import Akchii, Category
+from django.db.models.functions import Coalesce
+from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q, Avg, Max
+from .models import Akchii
+def discounts_view(request):
+    """
+    Представление для страницы акционных товаров
+    """
+    # Получаем все акционные товары (где skidka не None)
+    discount_products = Akchii.objects.filter(
+        skidka__isnull=False,
+        available=True
+    ).order_by('-created')
+    
+    # Вычисляем статистику для акций
+    discount_products_count = discount_products.count()
+    
+    if discount_products_count > 0:
+        # Максимальный процент скидки
+        products_with_discount = [
+            product for product in discount_products 
+            if product.has_discount
+        ]
+        
+        if products_with_discount:
+            max_discount_percentage = max(
+                product.discount_percentage 
+                for product in products_with_discount
+            )
+            
+            # Средний процент скидки
+            total_discount = sum(
+                product.discount_percentage 
+                for product in products_with_discount
+            )
+            average_discount_percentage = total_discount // len(products_with_discount)
+        else:
+            max_discount_percentage = 0
+            average_discount_percentage = 0
+    else:
+        max_discount_percentage = 0
+        average_discount_percentage = 0
+    
+    # Пагинация
+    page = request.GET.get('page', 1)
+    paginator = Paginator(discount_products, 12)
+    
+    try:
+        discount_products_paginated = paginator.page(page)
+    except PageNotAnInteger:
+        discount_products_paginated = paginator.page(1)
+    except EmptyPage:
+        discount_products_paginated = paginator.page(paginator.num_pages)
+    
+    context = {
+        'discount_products': discount_products_paginated,
+        'discount_products_count': discount_products_count,
+        'max_discount_percentage': max_discount_percentage,
+        'average_discount_percentage': average_discount_percentage,
+    }
+    
+    return render(request, 'shop/akchii.html', context)
+
+def discount_product_detail(request, id, slug):
+    """
+    Детальная страница акционного товара
+    """
+    product = get_object_or_404(
+        Akchii, 
+        id=id, 
+        slug=slug, 
+        available=True
+    )
+    
+    # Похожие акционные товары (исключая текущий)
+    similar_products = Akchii.objects.filter(
+        skidka__isnull=False,
+        available=True
+    ).exclude(id=id).order_by('-created')[:4]
+    
+    context = {
+        'product': product,
+        'similar_products': similar_products,
+    }
+    
+    return render(request, 'shop/discount_product_detail.html', context)
+
+
+# Контекстный процессор для отображения количества акционных товаров в шапке
+def discounts_context(request):
+    """Добавляет информацию об акционных товарах в контекст всех шаблонов"""
+    discount_products_count = Akchii.objects.filter(
+        skidka__isnull=False,
+        available=True
+    ).count()
+    
+    # Рекомендуемые акционные товары для отображения в других местах
+    featured_discounts = Akchii.objects.filter(
+        skidka__isnull=False,
+        available=True
+    ).order_by('-created')[:3]
+    
+    return {
+        'discount_products_count': discount_products_count,
+        'featured_discounts': featured_discounts,
+    }
+    
+    #!
+
+def cart_operations2(request, product_id, operation):
+    """Handle all cart operations (add/remove/update) with discount support"""
+    product = get_object_or_404(Akchii, id=product_id)
+    cart = request.session.get('cart', {})
+    str_id = str(product_id)
+    
+    if operation == 'add':
+        quantity = int(request.POST.get('quantity', 1))
+        cart[str_id] = cart.get(str_id, 0) + quantity
+        msg = f'Товар "{product.name}" добавлен в корзину'
+        
+        # Если запрос AJAX, возвращаем JSON
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            # Подсчитываем общее количество товаров в корзине
+            cart_items_count = sum(cart.values())
+            request.session['cart_items_count'] = cart_items_count
+            
+            return JsonResponse({
+                'success': True,
+                'message': msg,
+                'cart_items_count': cart_items_count
+            })
+            
+    elif operation == 'remove':
+        if str_id in cart:
+            del cart[str_id]
+            msg = f'Товар "{product.name}" удален из корзины'
+    elif operation == 'update' and request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 1))
+        if quantity > 0:
+            cart[str_id] = quantity
+            msg = f'Количество товара "{product.name}" обновлено'
+        else:
+            del cart[str_id]
+            msg = f'Товар "{product.name}" удален из корзины'
+    else:
+        return redirect('cart_detail')
+    
+    request.session['cart'] = cart
+    request.session.modified = True
+    
+    # Для обычных запросов используем messages и редирект
+    messages.success(request, msg)
+    return redirect('cart_detail')
+
+def cart_detail2(request):
+    """Display cart contents with discount support"""
+    cart = request.session.get('cart', {})
+    products = []
+    total_price = 0
+    total_original_price = 0  # Сумма без скидок
+    total_savings = 0  # Общая экономия
+    
+    for product_id, quantity in cart.items():
+        product = get_object_or_404(Akchii, id=int(product_id))
+        
+        # Используем финальную цену (со скидкой если есть)
+        unit_price = product.final_price
+        item_total = unit_price * quantity
+        
+        # Рассчитываем оригинальную цену для отображения скидки
+        original_unit_price = product.price
+        original_item_total = original_unit_price * quantity
+        
+        # Рассчитываем экономию для этого товара
+        item_savings = original_item_total - item_total
+        
+        products.append({
+            'product': product,
+            'quantity': quantity,
+            'unit_price': unit_price,
+            'total': item_total,
+            'original_unit_price': original_unit_price,
+            'original_total': original_item_total,
+            'savings': item_savings,
+            'has_discount': product.has_discount,
+            'discount_percentage': product.discount_percentage,
+        })
+        
+        total_price += item_total
+        total_original_price += original_item_total
+        total_savings += item_savings
+
+    items_count = sum(item['quantity'] for item in products)
+    request.session['cart_items_count'] = items_count
+    
+    return render(request, 'shop/cart.html', {
+        'cart_items': products,
+        'total_price': total_price,
+        'total_original_price': total_original_price,
+        'total_savings': total_savings,
+    })
+
+# Контекстный процессор для отображения количества товаров в корзине
+def cart_context(request):
+    """Добавляет информацию о корзине в контекст всех шаблонов"""
+    cart = request.session.get('cart', {})
+    cart_items_count = sum(cart.values())
+    
+    return {
+        'cart_items_count': cart_items_count,
+    }

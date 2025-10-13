@@ -1,0 +1,379 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    /* Стили для страницы акций */
+    .discounts-header {
+        background: linear-gradient(135deg, rgb(156, 19, 37) 0%, #d81b60 100%);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .discounts-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+        background-size: cover;
+    }
+    
+    .discounts-header h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        position: relative;
+    }
+    
+    .discounts-header p {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    .discount-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: #dc3545;
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+    
+    .price-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .original-price {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 1rem;
+    }
+    
+    .discount-price {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 1.3rem;
+    }
+    
+    .final-price {
+        color: rgb(156, 19, 37);
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .saving-badge {
+        background-color: #28a745;
+        color: white;
+        padding: 0.2rem 0.5rem;
+        border-radius: 15px;
+        font-size: 0.7rem;
+        font-weight: 500;
+    }
+    
+    .product-card {
+        position: relative;
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    
+    .product-img {
+        width: 100%;
+        height: 250px;
+        object-fit: contain;
+        background-color: #f8f8f8;
+        padding: 10px;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-img-container {
+        height: 250px;
+        overflow: hidden;
+    }
+    
+    .product-card:hover .product-img {
+        transform: scale(1.05);
+    }
+    
+    .product-info {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .product-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .product-description {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .discount-stats {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+    
+    .stats-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: rgb(156, 19, 37);
+    }
+    
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    
+    .empty-discounts {
+        text-align: center;
+        padding: 3rem;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 3rem;
+    }
+    
+    .empty-discounts i {
+        font-size: 4rem;
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+    }
+    
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 3rem;
+    }
+    
+    .page-item {
+        margin: 0 0.3rem;
+    }
+    
+    .page-link {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        text-decoration: none;
+        color: #333;
+        transition: all 0.3s ease;
+    }
+    
+    .page-link:hover, .page-item.active .page-link {
+        background-color: rgb(156, 19, 37);
+        color: white;
+    }
+    
+    @media (max-width: 1200px) {
+        .products-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .discounts-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .stats-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .discounts-header {
+            padding: 3rem 0;
+        }
+        
+        .discounts-header h1 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="discounts-header">
+    <div class="container">
+        <h1>Акционные товары</h1>
+        <p>Специальные предложения со скидками до {{ max_discount_percentage }}%</p>
+    </div>
+</section>
+
+<div class="container">
+    <!-- Статистика акций -->
+    <div class="discount-stats">
+        <h2 class="text-center mb-4">Выгодные предложения</h2>
+        <div class="stats-container">
+            <div class="stat-item">
+                <span class="stat-value">{{ discount_products_count }}</span>
+                <span class="stat-label">товаров со скидкой</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">до {{ max_discount_percentage }}%</span>
+                <span class="stat-label">максимальная скидка</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">{{ average_discount_percentage }}%</span>
+                <span class="stat-label">средняя скидка</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сетка товаров со скидками -->
+    {% if discount_products %}
+    <div class="products-grid">
+        {% for product in discount_products %}
+        <div class="product-card">
+            <!-- Бейдж скидки -->
+            {% if product.has_discount %}
+            <div class="discount-badge">
+                -{{ product.discount_percentage }}%
+            </div>
+            {% endif %}
+            
+            <a href="{% url 'discount_product_detail' product.id product.slug %}">
+                <div class="product-img-container">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-img">
+                </div>
+                <div class="product-info">
+                    <div>
+                        <h3 class="product-title">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description|truncatewords:15 }}</p>
+                    </div>
+                    
+                    <!-- Блок с ценами -->
+                    <div class="price-container">
+                        {% if product.has_discount %}
+                            <span class="original-price">{{ product.price }} сом</span>
+                            <span class="discount-price">{{ product.final_price }} сом</span>
+                            <span class="saving-badge">Экономия {{ product.savings_amount|floatformat:0 }} сом</span>
+                        {% else %}
+                            <span class="final-price">{{ product.price }} сом</span>
+                        {% endif %}
+                    </div>
+                    
+                    <button class="btn" style="background: rgb(156, 19, 37); color: white; width: 100%;">
+                        Подробнее
+                    </button>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Сообщение, если нет товаров со скидкой -->
+    <div class="empty-discounts">
+        <i class="fas fa-tag"></i>
+        <h3>В данный момент нет акционных товаров</h3>
+        <p>Но вы можете посмотреть другие товары в нашем <a href="{% url 'catalog' %}">каталоге</a></p>
+    </div>
+    {% endif %}
+
+    <!-- Пагинация -->
+    {% if discount_products.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% if discount_products.has_previous %}
+        <div class="page-item">
+            <a href="?page=1" class="page-link">&laquo; первая</a>
+        </div>
+        <div class="page-item">
+            <a href="?page={{ discount_products.previous_page_number }}" class="page-link">предыдущая</a>
+        </div>
+        {% endif %}
+        
+        {% for num in discount_products.paginator.page_range %}
+        {% if discount_products.number == num %}
+        <div class="page-item active">
+            <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+        </div>
+        {% elif num > discount_products.number|add:'-3' and num < discount_products.number|add:'3' %}
+        <div class="page-item">
+            <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+        </div>
+        {% endif %}
+        {% endfor %}
+        
+        {% if discount_products.has_next %}
+        <div class="page-item">
+            <a href="?page={{ discount_products.next_page_number }}" class="page-link">следующая</a>
+        </div>
+        <div class="page-item">
+            <a href="?page={{ discount_products.paginator.num_pages }}" class="page-link">последняя &raquo;</a>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

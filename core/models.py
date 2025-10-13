@@ -2,8 +2,40 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 
+from django.forms import ValidationError
 from phonenumber_field.modelfields import PhoneNumberField
 
+# models.py - добавим в начало файла
+class ProductMixin:
+    """Миксин для общих методов товаров"""
+    
+    @property
+    def has_discount(self):
+        """Проверяет, есть ли скидка у товара"""
+        return self.skidka is not None and self.skidka < self.price
+    
+    @property
+    def discount_percentage(self):
+        """Вычисляет процент скидки"""
+        if self.has_discount:
+            return int(((self.price - self.skidka) / self.price) * 100)
+        return 0
+    
+    @property
+    def final_price(self):
+        """Возвращает итоговую цену (со скидкой или оригинальную)"""
+        return self.skidka if self.has_discount else self.price
+    
+    @property
+    def savings_amount(self):
+        """Вычисление суммы экономии при наличии скидки"""
+        if self.has_discount:
+            return self.price - self.final_price
+        return 0
+
+# Добавим миксин к моделям
+
+    # существующие поля Product...
 
 class Shop(models.Model):
     name = models.CharField(max_length=100, verbose_name="Название магазина")
@@ -53,11 +85,12 @@ class Category(models.Model):
         return f"{self.main_category.name} - {self.name}"
     
 
-class Product(models.Model):
+class Product(ProductMixin, models.Model):
     PRODUCT_TYPES = [
         ('flower', 'Цветы'),
         ('toy', 'Игрушки'),
         ('cake', 'Десерты'),
+        ('flowerbag', 'Цветы в горшке'),
     ]
     
     category = models.ForeignKey(
@@ -155,7 +188,7 @@ class Product(models.Model):
     def final_price(self):
         """Возвращает итоговую цену (со скидкой или оригинальную)"""
         return self.skidka if self.has_discount else self.price
-    
+
     
 class Review(models.Model):
     product = models.ForeignKey(
@@ -283,39 +316,9 @@ class Order(models.Model):
         return f"Заказ №{self.id} от {self.full_name}"
 
 
-class OrderItem(models.Model):
-    order = models.ForeignKey(
-        Order, 
-        related_name='items', 
-        on_delete=models.CASCADE,
-        verbose_name="Заказ"
-    )
-    product = models.ForeignKey(
-        Product, 
-        on_delete=models.CASCADE,
-        verbose_name="Товар"
-    )
-    price = models.DecimalField(
-        max_digits=10, 
-        decimal_places=2,
-        verbose_name="Цена",
-        default=0.00,
-    )
-    quantity = models.PositiveIntegerField(
-        default=1,
-        verbose_name="Количество"
-    )
-    
-    class Meta:
-        verbose_name = "Элемент заказа"
-        verbose_name_plural = "Элементы заказа"
-        ordering = ['-id']
-    
-    def get_cost(self):
-        return self.price * self.quantity
-    
-    def __str__(self):
-        return f"{self.quantity} x {self.product.name} (заказ №{self.order.id})"
+
+
+
 
 
 class Customer(models.Model):
@@ -358,3 +361,131 @@ class Customer(models.Model):
     
     def __str__(self):
         return f"Клиент {self.full_name}"
+
+
+
+
+
+class Akchii(ProductMixin,models.Model):
+    PRODUCT_TYPES = [
+        ('flower', 'Цветы'),
+        ('toy', 'Игрушки'),
+        ('cake', 'Десерты'),
+        ('flowerbag', 'Цветы в горшке'),
+    ]
+    
+    
+    
+    name = models.CharField(max_length=100, verbose_name="Название товара")
+    image = models.ImageField(
+        upload_to='akchii/', 
+        verbose_name="Изображение товара"
+    )
+    slug = models.SlugField(max_length=100, unique=True, verbose_name="URL-адрес")
+    description = models.TextField(verbose_name="Описание товара")
+    price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2, 
+        verbose_name="Цена (сом)"
+    )
+    available = models.BooleanField(default=True, verbose_name="Доступен")
+    created = models.DateTimeField(auto_now_add=True, verbose_name="Дата создания")
+    updated = models.DateTimeField(auto_now=True, verbose_name="Дата обновления")
+    skidka = models.DecimalField(max_digits=10,decimal_places=2, null=True, blank=True, verbose_name="Скидка((новая цена)сом)")
+    
+    
+    
+   
+    class Meta:
+        verbose_name = "Акционный Товар"
+        verbose_name_plural = "Товары с Акции"
+        ordering = ['-created']
+    
+    def __str__(self):
+        return self.name
+    
+    def get_product_type_display(self):
+        return dict(self.PRODUCT_TYPES).get(self.product_type)    
+    @property
+    def savings_amount(self):
+        """Вычисление суммы экономии при наличии скидки"""
+        if self.has_discount:
+            return self.price - self.final_price
+        return 0
+    @property
+    def has_discount(self):
+        """Проверяет, есть ли скидка у товара"""
+        return self.skidka is not None and self.skidka < self.price
+    
+    @property
+    def discount_percentage(self):
+        """Вычисляет процент скидки"""
+        if self.has_discount:
+            return int(((self.price - self.skidka) / self.price) * 100)
+        return 0
+    
+    @property
+    def final_price(self):
+        """Возвращает итоговую цену (со скидкой или оригинальную)"""
+        return self.skidka if self.has_discount else self.price
+
+ 
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(
+        Order, 
+        related_name='items', 
+        on_delete=models.CASCADE,
+        verbose_name="Заказ"
+    )
+    product = models.ForeignKey(
+        Product, 
+        on_delete=models.CASCADE,
+        verbose_name="Товар",
+    null=True, blank=True
+    )
+    akchii = models.ForeignKey(Akchii, on_delete=models.SET_NULL, null=True, blank=True)
+    price = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        verbose_name="Цена",
+        default=0.00,
+    )
+    quantity = models.PositiveIntegerField(
+        default=1,
+        verbose_name="Количество"
+    )
+    
+    class Meta:
+        verbose_name = "Элемент заказа"
+        verbose_name_plural = "Элементы заказа"
+        ordering = ['-id']
+    
+    def get_cost(self):
+        return self.price * self.quantity
+    @property
+    def product_instance(self):
+        """Возвращает экземпляр товара (независимо от типа)"""
+        return self.product or self.akchii
+    
+    @property
+    def product_name(self):
+        """Возвращает название товара"""
+        instance = self.product_instance
+        return instance.name if instance else "Товар удален"
+    @property
+    def product_instance(self):
+        """Возвращает объект товара независимо от его типа"""
+        return self.product or self.akchii
+    
+    def clean(self):
+        """Проверяет, что хотя бы одно поле товара заполнено"""
+        if not self.product and not self.akchii:
+            raise ValidationError("Должен быть указан либо product, либо akchii")
+    @property
+    def is_discount_product(self):
+        """Проверяет, является ли товар акционным"""
+        return self.akchii is not None
+    def __str__(self):
+        return f"{self.quantity} x {self.product.name} (заказ №{self.order.id})"
+

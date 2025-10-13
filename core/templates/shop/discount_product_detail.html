@@ -1,0 +1,513 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .product-detail {
+        padding: 2rem 0;
+    }
+    
+    .product-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 2rem 0;
+        margin-bottom: 3rem;
+    }
+    
+    .breadcrumb {
+        background: none;
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+    
+    .breadcrumb a {
+        color: rgb(156, 19, 37);
+        text-decoration: none;
+    }
+    
+    .product-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        margin-bottom: 4rem;
+    }
+    
+    .product-image {
+        position: relative;
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .product-image img {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        border-radius: 10px;
+    }
+    
+    .discount-badge-large {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: #dc3545;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        z-index: 2;
+    }
+    
+    .product-info {
+        padding: 1rem 0;
+    }
+    
+    .product-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    .product-description {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        color: #666;
+        margin-bottom: 2rem;
+    }
+    
+    .price-section {
+        background: #f8f9fa;
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    
+    .price-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .original-price-large {
+        text-decoration: line-through;
+        color: #6c757d;
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+    
+    .discount-price-large {
+        color: #dc3545;
+        font-weight: 700;
+        font-size: 2.5rem;
+    }
+    
+    .final-price-large {
+        color: rgb(156, 19, 37);
+        font-weight: 700;
+        font-size: 2rem;
+    }
+    
+    .saving-badge-large {
+        background: #28a745;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-primary-custom {
+        background: rgb(156, 19, 37);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .btn-primary-custom:hover {
+        background: #a0152b;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(156, 19, 37, 0.3);
+    }
+    
+    .btn-secondary-custom {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+        min-width: 200px;
+    }
+    
+    .btn-secondary-custom:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+    
+    .product-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+    
+    .meta-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .meta-icon {
+        font-size: 2rem;
+        color: rgb(156, 19, 37);
+        margin-bottom: 0.5rem;
+    }
+    
+    .meta-label {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+    
+    .meta-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .similar-products {
+        margin-top: 4rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+    
+    .product-card {
+        position: relative;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .product-img-container {
+        height: 200px;
+        overflow: hidden;
+    }
+    
+    .product-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-card:hover img {
+        transform: scale(1.05);
+    }
+    
+    .product-card-info {
+        padding: 1.5rem;
+    }
+    
+    .product-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+    
+    .product-card-price {
+        color: rgb(156, 19, 37);
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .discount-badge-small {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #dc3545;
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    
+    @media (max-width: 992px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .products-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .product-title {
+            font-size: 2rem;
+        }
+        
+        .products-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn-primary-custom, .btn-secondary-custom {
+            min-width: 100%;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .product-meta {
+            grid-template-columns: 1fr;
+        }
+        
+        .price-container {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Хлебные крошки -->
+<section class="product-header">
+    <div class="container">
+        <nav class="breadcrumb">
+            <a href="">Главная</a> &raquo;
+            <a href="{% url 'discounts' %}">Акции</a> &raquo;
+            <span>{{ product.name }}</span>
+        </nav>
+    </div>
+</section>
+
+<div class="container">
+    <div class="product-detail">
+        <!-- Основная информация о товаре -->
+        <div class="product-grid">
+            <!-- Изображение товара -->
+            <div class="product-image">
+                {% if product.has_discount %}
+                <div class="discount-badge-large">
+                    -{{ product.discount_percentage }}%
+                </div>
+                {% endif %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            </div>
+            
+            <!-- Информация о товаре -->
+            <div class="product-info">
+                <h1 class="product-title">{{ product.name }}</h1>
+                <p class="product-description">{{ product.description }}</p>
+                
+                <!-- Цены -->
+                <div class="price-section">
+                    <div class="price-container">
+                        {% if product.has_discount %}
+                            <span class="original-price-large">{{ product.price }} сом</span>
+                            <span class="discount-price-large">{{ product.final_price }} сом</span>
+                            <span class="saving-badge-large">Экономия {{ product.savings_amount|floatformat:0 }} сом</span>
+                        {% else %}
+                            <span class="final-price-large">{{ product.price }} сом</span>
+                        {% endif %}
+                    </div>
+                    
+                    {% if product.has_discount %}
+                    <div class="progress" style="height: 8px; margin: 1rem 0;">
+                        <div class="progress-bar bg-danger" style="width: {{ product.discount_percentage }}%"></div>
+                    </div>
+                    <p class="text-muted">Скидка действует ограниченное время!</p>
+                    {% endif %}
+                </div>
+                
+                <!-- Кнопки действий -->
+                <div class="action-buttons">
+                    <form method="post" action="{% url 'cart_operations' 'add' product.id %}" class="add-to-cart">
+        {% csrf_token %}
+    <input type="hidden" name="model_type" value="akchii">
+    <div class="quantity-selector">
+                        <button type="button" class="quantity-btn minus">-</button>
+                        <input type="number" name="quantity" value="1" min="1" class="quantity-input">
+                        <button type="button" class="quantity-btn plus">+</button>
+                    </div>
+                    <button type="submit" style=" background: rgb(156, 19, 37)" class="btn"><i class="fas fa-shopping-cart"></i>  Добавить в корзину</button>
+              
+    <!-- остальная форма -->
+</form>
+                    {% comment %} <button class="btn-primary-custom">
+                        <i class="fas fa-shopping-cart"></i> Добавить в корзину
+                    </button> {% endcomment %}
+                  
+                </div>
+                
+                <!-- Дополнительная информация -->
+                <div class="product-meta">
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <div class="meta-label">Доставка</div>
+                        <div class="meta-value">20-30 мин</div>
+                    </div>
+                    
+                    <div class="meta-item">
+                        <div class="meta-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="meta-label">В наличии</div>
+                        <div class="meta-value">{{ product.available|yesno:"Да,Нет" }}</div>
+                    </div>
+                    
+                   
+                    
+                  
+                    
+                </div>
+            </div>
+        </div>
+        
+        <!-- Похожие товары -->
+        {% if similar_products %}
+        <div class="similar-products">
+            <h2 class="section-title">Похожие акционные товары</h2>
+            <div class="products-grid">
+                {% for similar_product in similar_products %}
+                <div class="product-card">
+                    {% if similar_product.has_discount %}
+                    <div class="discount-badge-small">
+                        -{{ similar_product.discount_percentage }}%
+                    </div>
+                    {% endif %}
+                    
+                    <a href="{% url 'discount_product_detail' similar_product.id similar_product.slug %}">
+                        <div class="product-img-container">
+                            <img src="{{ similar_product.image.url }}" alt="{{ similar_product.name }}">
+                        </div>
+                        <div class="product-card-info">
+                            <h3 class="product-card-title">{{ similar_product.name|truncatewords:5 }}</h3>
+                            <div class="product-card-price">
+                                {% if similar_product.has_discount %}
+                                    <span style="text-decoration: line-through; color: #6c757d; font-size: 0.9rem;">
+                                        {{ similar_product.price }} сом
+                                    </span>
+                                    <br>
+                                    <span style="color: #dc3545;">{{ similar_product.final_price }} сом</span>
+                                {% else %}
+                                    {{ similar_product.price }} сом
+                                {% endif %}
+                            </div>
+                            <button class="btn btn-sm" style="background: rgb(156, 19, 37); color: white; width: 100%;">
+                                Подробнее
+                            </button>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Анимация добавления в корзину
+        const addToCartBtn = document.querySelector('.btn-primary-custom');
+        addToCartBtn.addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-check"></i> Добавлено в корзину';
+            this.style.background = '#28a745';
+            
+            setTimeout(() => {
+                this.innerHTML = originalText;
+                this.style.background = '';
+            }, 2000);
+            
+            // Здесь можно добавить AJAX запрос для добавления в корзину
+        });
+        
+        // Анимация добавления в избранное
+        const addToFavBtn = document.querySelector('.btn-secondary-custom');
+        addToFavBtn.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('fas')) {
+                icon.classList.replace('fas', 'far');
+                this.style.background = '#6c757d';
+            } else {
+                icon.classList.replace('far', 'fas');
+                this.style.background = '#dc3545';
+            }
+            
+            // Здесь можно добавить AJAX запрос для добавления в избранное
+        });
+        
+        // Плавная прокрутка к секциям
+        const smoothScroll = (target) => {
+            const element = document.querySelector(target);
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        };
+    });
+</script>
+{% endblock %}

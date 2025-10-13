@@ -22,6 +22,15 @@ from core import views
 
 
 urlpatterns = [  
+               
+               # Страница акций
+    path('discounts/', views.discounts_view, name='discounts'),
+    
+    # Акционные товары по категории
+    # path('discounts/category/<slug:category_slug>/', views.discount_products_by_category, name='discounts_by_category'),
+    path('discounts/product/<int:id>/<slug:slug>/', views.discount_product_detail, name='discount_product_detail'),
+    # Акционные товары по типу
+    # path('discounts/type/<str:product_type>/', views.discount_products_by_type, name='discounts_by_type'),
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     
@@ -31,7 +40,7 @@ urlpatterns = [
     path('product/<int:id>/<slug:slug>/', views.product_detail, name='product_detail'),
     
     path('cart/', views.cart_detail, name='cart_detail'),
-    path('cart/<str:operation>/<int:product_id>/', views.cart_operations, name='cart_operations'),
+   
     
     path('checkout/', views.checkout, name='checkout'),
     path('order_success/', views.order_success, name='order_success'),
@@ -50,11 +59,20 @@ urlpatterns = [
     path('customer-list/', views.CustomerListView.as_view(), name='customer-list'),
     path('customer-add/', views.CustomerCreateView.as_view(), name='customer-add'),
     path('customer-edit/<int:pk>/', views.CustomerUpdateView.as_view(), name='customer-edit'),
-
-path('cart/', views.cart_detail, name='cart_detail'),
+    # path('cart/', views.cart_detail, name='cart_detail'),
+ path('cart/<str:operation>/<int:product_id>/', views.cart_operations, name='cart_operations'),
 path('cart/add/<int:product_id>/', views.cart_operations, {'operation': 'add'}, name='add_to_cart'),
 path('cart/remove/<int:product_id>/', views.cart_operations, {'operation': 'remove'}, name='remove_from_cart'),
-path('cart/update/<int:product_id>/', views.cart_operations, {'operation': 'update'}, name='update_cart_item'),]
+path('cart/update/<int:product_id>/', views.cart_operations, {'operation': 'update'}, name='update_cart_item'),
+
+
+
+# Корзина
+    # path('cart/<str:operation>/<int:product_id>/', views.cart_operations2, name='cart_operations'),
+    # path('cart/add/<int:product_id>/', views.cart_operations2, {'operation': 'add'}, name='add_to_cart'),
+    # path('cart/remove/<int:product_id>/', views.cart_operations2, {'operation': 'remove'}, name='remove_from_cart'),
+    # path('cart/update/<int:product_id>/', views.cart_operations2, {'operation': 'update'}, name='update_cart_item'),
+    path('cart/', views.cart_detail, name='cart_detail'),]
 
 
 if settings.DEBUG:

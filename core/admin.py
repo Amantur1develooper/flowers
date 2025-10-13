@@ -6,7 +6,8 @@ from django.utils.html import format_html
 from .models import *
 
 from django.contrib import admin
-from .models import MainCategory
+from .models import MainCategory, Akchii
+admin.site.register(Akchii)
 
 
 @admin.register(MainCategory)
@@ -103,17 +104,8 @@ class ProductAdmin(admin.ModelAdmin):
     display_image.short_description = "Изображение"
 
 
-@admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
-    list_display = ('product', 'name', 'rating', 'approved', 'created')
-    list_filter = ('approved', 'rating', 'created')
-    search_fields = ('product__name', 'name', 'email', 'text')
-    list_editable = ('approved',)
-    actions = ['approve_reviews']
-    
-    def approve_reviews(self, request, queryset):
-        queryset.update(approved=True)
-    approve_reviews.short_description = "Одобрить выбранные отзывы"
+
+
 
 
 class OrderItemInline(admin.TabularInline):
