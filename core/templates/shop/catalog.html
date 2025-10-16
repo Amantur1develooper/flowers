@@ -67,6 +67,31 @@
   background: url("{% static 'images/teddy.png' %}") no-repeat center/contain;
 }
 
+.gorshok {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background: url("{% static 'images/горшочные.png' %}") no-repeat center/contain;
+}
+
+.cake {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background: url("{% static 'images/cake.png' %}") no-repeat center/contain;
+}
+.allstuff {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background: url("{% static 'images/all_stuff.png' %}") no-repeat center/contain;
+}
+.flower222 {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  background: url("{% static 'images/flower.png' %}") no-repeat center/contain;
+}
     .catalog-header {
         background-color: #f8f9fa;
         padding: 3rem 0;
@@ -641,7 +666,7 @@
     <!-- Основные категории -->
     <div class="main-categories">
         <a href="{% url 'catalog' %}" class="main-category {% if not main_category %}active{% endif %}">
-            <i class="fas fa-star"></i>
+            <i class="allstuff"></i>
             <h3>Все товары</h3>
         </a>
         {% for main_cat in main_categories %}
