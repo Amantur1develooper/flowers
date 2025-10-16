@@ -17,7 +17,7 @@ class CoreConfig(AppConfig):
         from core.utils import send_daily_report
 
         scheduler = BackgroundScheduler()
-        scheduler.add_job(send_daily_report, 'cron', hour=11, minute=25)
+        scheduler.add_job(send_daily_report, 'cron', hour=11, minute=27)
         scheduler.start()
 
         CoreConfig.scheduler_started = True
