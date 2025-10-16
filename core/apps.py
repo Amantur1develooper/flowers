@@ -1,26 +1,24 @@
-# from django.apps import AppConfig
-# from apscheduler.schedulers.background import BackgroundScheduler
-# import os
+from django.apps import AppConfig
+from apscheduler.schedulers.background import BackgroundScheduler
+import os
 
+class CoreConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'core'
+    scheduler_started = False  # Флаг, чтобы не запускать дважды
 
-# class CoreConfig(AppConfig):
-#     default_auto_field = 'django.db.models.BigAutoField'
-#     name = 'core'
+    def ready(self):
+        if CoreConfig.scheduler_started:
+            return  # чтобы не было двойного запуска при автоперезапуске runserver
 
-#     def ready(self):
-#         run_main = os.environ.get('RUN_MAIN')
-#         if run_main == 'true' or run_main is None:
-#             from .utils import send_daily_report
-#             scheduler = BackgroundScheduler()
-#             scheduler.add_job(send_daily_report, 'cron', hour=8, minute=47)
-#             scheduler.start()
+        if os.environ.get('RUN_MAIN') != 'true':
+            return
 
-#     # def ready(self):
-#     #     if os.environ.get('RUN_MAIN', None) != 'true':
-#     #         return 
+        from core.utils import send_daily_report
 
-#     #     from .utils import send_daily_report
-#     #     scheduler = BackgroundScheduler()
-#     #     scheduler.add_job(send_daily_report, 'cron', hour=8, minute=30)  # Ежедневно в 9:00 утра
-#     #     scheduler.start()
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(send_daily_report, 'cron', hour=11, minute=25)
+        scheduler.start()
 
+        CoreConfig.scheduler_started = True
+        print("✅ Планировщик APScheduler запущен автоматически")
