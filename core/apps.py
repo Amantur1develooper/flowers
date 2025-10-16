@@ -13,6 +13,6 @@ class CoreConfig(AppConfig):
 
         from .utils import send_daily_report
         scheduler = BackgroundScheduler()
-        scheduler.add_job(send_daily_report, 'cron', hour=7, minute=0)  # Ежедневно в 9:00 утра
+        scheduler.add_job(send_daily_report, 'cron', hour=8, minute=30)  # Ежедневно в 9:00 утра
         scheduler.start()
 
