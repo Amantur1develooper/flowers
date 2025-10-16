@@ -71,6 +71,66 @@
         height: 80px;
     }
 }
+.bear {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    background: #A0522D; /* основной цвет медведя */
+    border-radius: 50%; /* голова */
+    margin: 50px auto;
+}
+
+/* Ушки */
+.bear::before,
+.bear::after {
+    content: "";
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #A0522D;
+    border-radius: 50%;
+    top: -25px;
+}
+
+.bear::before {
+    left: -25px; /* левое ушко */
+}
+
+.bear::after {
+    right: -25px; /* правое ушко */
+}
+
+/* Морда */
+.bear span {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 40px;
+    background: #fff;
+    border-radius: 50%;
+}
+
+/* Глаза */
+.bear span::before,
+.bear span::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #000;
+    border-radius: 50%;
+    top: 10px;
+}
+
+.bear span::before {
+    left: 10px;
+}
+
+.bear span::after {
+    right: 10px;
+}
 
 /* Маленькие смартфоны (до 480px) */
 @media (max-width: 480px) {
