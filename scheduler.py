@@ -10,7 +10,7 @@ django.setup()
 from core.utils import send_daily_report
 
 scheduler = BlockingScheduler()
-scheduler.add_job(send_daily_report, 'cron', hour=11, minute=40)
+scheduler.add_job(send_daily_report, 'cron', hour=11, minute=50)
 
 if __name__ == "__main__":
     print("✅ Планировщик запущен...")
