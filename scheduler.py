@@ -11,6 +11,6 @@ django.setup()  # 2. Инициализируем Django
 from core.utils import send_daily_report
 
 scheduler = BlockingScheduler(timezone="Asia/Bishkek")
-scheduler.add_job(send_daily_report, 'cron', hour=9, minute=13)  # Уведомление в 8:30
+scheduler.add_job(send_daily_report, 'cron', hour=9, minute=27)  # Уведомление в 8:30
 print("✅ Планировщик запущен...")
 scheduler.start()
