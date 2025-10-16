@@ -71,66 +71,121 @@
         height: 80px;
     }
 }
-.bear {
+.teddy {
     position: relative;
-    width: 120px;
-    height: 120px;
-    background: #A0522D; /* основной цвет медведя */
-    border-radius: 50%; /* голова */
+    width: 60px;
+    height: 100px;
+    background: #000; /* туловище */
     margin: 50px auto;
+    border-radius: 30px; /* туловище округлое */
 }
 
-/* Ушки */
-.bear::before,
-.bear::after {
+/* Голова */
+.teddy::before {
     content: "";
     position: absolute;
     width: 50px;
     height: 50px;
-    background: #A0522D;
+    background: #000;
     border-radius: 50%;
-    top: -25px;
+    top: -40px;
+    left: 5px;
 }
 
-.bear::before {
-    left: -25px; /* левое ушко */
-}
-
-.bear::after {
-    right: -25px; /* правое ушко */
-}
-
-/* Морда */
-.bear span {
+/* Ушки */
+.teddy::after {
+    content: "";
     position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 40px;
-    background: #fff;
+    width: 15px;
+    height: 15px;
+    background: #000;
     border-radius: 50%;
+    top: -50px;
+    left: -5px;
+    box-shadow: 45px 0 0 #000; /* второе ухо */
 }
 
 /* Глаза */
-.bear span::before,
-.bear span::after {
+.teddy-eye-left, .teddy-eye-right {
     content: "";
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    top: -15px;
+}
+
+.teddy-eye-left {
+    left: 15px;
+}
+
+.teddy-eye-right {
+    left: 35px;
+}
+
+/* Нос */
+.teddy-nose {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
     background: #000;
     border-radius: 50%;
-    top: 10px;
+    top: -5px;
+    left: 27px;
 }
 
-.bear span::before {
-    left: 10px;
+/* Рот */
+.teddy-mouth {
+    content: "";
+    position: absolute;
+    width: 12px;
+    height: 2px;
+    background: #000;
+    border-radius: 2px;
+    top: 5px;
+    left: 24px;
 }
 
-.bear span::after {
-    right: 10px;
+/* Ручки */
+.teddy-arm-left, .teddy-arm-right {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 40px;
+    background: #000;
+    border-radius: 10px;
+    top: 20px;
 }
+
+.teddy-arm-left {
+    left: -15px;
+}
+
+.teddy-arm-right {
+    right: -15px;
+}
+
+/* Ножки */
+.teddy-leg-left, .teddy-leg-right {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 30px;
+    background: #000;
+    border-radius: 10px;
+    bottom: 0;
+}
+
+.teddy-leg-left {
+    left: 5px;
+}
+
+.teddy-leg-right {
+    right: 5px;
+}
+
 
 /* Маленькие смартфоны (до 480px) */
 @media (max-width: 480px) {

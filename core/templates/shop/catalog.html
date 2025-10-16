@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+
 <style>
     /* Стили для скидок */
     .discount-badge {
@@ -58,7 +60,13 @@
     }
 </style>
 <style>
-    
+.icon-teddy {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: url("{% static 'images/teddy.png' %}") no-repeat center/contain;
+}
+
     .catalog-header {
         background-color: #f8f9fa;
         padding: 3rem 0;
