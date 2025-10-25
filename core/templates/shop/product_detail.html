@@ -4,148 +4,214 @@
 <style>
     .product-detail {
         padding: 3rem 0;
+        background: #f8f9fa;
     }
     
     .product-container {
         display: grid;
-        grid-template-columns: 1fr ;
+        grid-template-columns: 1fr;
         gap: 3rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     }
     
     .product-gallery {
-        display: grid;
-        grid-template-columns: 100px 1fr;
-        gap: 1rem;
-    }
-    
-    .thumbnail-list {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.5rem;
     }
     
-    .thumbnail {
-        width: 100%;
-        height: 80px;
-        object-fit: cover;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    
-    .thumbnail:hover {
-        transform: scale(1.05);
+    .main-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        background: #f8f9fa;
     }
     
     .main-image {
         width: 100%;
         height: 500px;
-        object-fit: cover;
-        border-radius: 10px;
+        object-fit: contain;
+        transition: transform 0.3s ease;
+        cursor: zoom-in;
     }
     
-    .product-info {
-        padding: 1rem;
+    .main-image.zoomed {
+        transform: scale(1.5);
+        cursor: zoom-out;
+    }
+    
+    .product-price-section {
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-bottom: 2rem;
     }
     
     .product-title {
-        font-size: 2rem;
-        margin-bottom: 1rem;
+        font-size: 2.2rem;
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+        color: #222;
+        font-weight: 700;
     }
     
-    .product-price {
-        font-size: 1.8rem;
+    .price-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 0.8rem;
+        flex-wrap: wrap;
+    }
+    
+    .original-price {
+        font-size: 1.4rem;
+        text-decoration: line-through;
+        color: #6c757d;
+        font-weight: 500;
+    }
+    
+    .current-price {
+        font-size: 2.2rem;
         color: rgb(156, 19, 37);
         font-weight: 700;
-        margin-bottom: 1.5rem;
+    }
+    
+    .discount-badge {
+        background: #dc3545;
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    .savings {
+        color: #28a745;
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin-top: 0.5rem;
+    }
+    
+    .regular-price {
+        font-size: 2.2rem;
+        color: rgb(156, 19, 37);
+        font-weight: 700;
     }
     
     .product-description {
-        margin-bottom: 2rem;
+        font-size: 1.2rem;
         line-height: 1.7;
+        color: #444;
+        margin: 2rem 0;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 5px solid rgb(156, 19, 37);
     }
     
     .add-to-cart {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        margin-bottom: 2rem;
+        gap: 1.5rem;
+        margin: 2.5rem 0;
+        flex-wrap: wrap;
     }
     
     .quantity-selector {
         display: flex;
         align-items: center;
-        border: 1px solid #ddd;
-        border-radius: 5px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
         overflow: hidden;
+        background: white;
     }
     
     .quantity-btn {
         background-color: #f8f9fa;
         border: none;
-        padding: 0.8rem 1rem;
+        padding: 1rem 1.2rem;
         cursor: pointer;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+    
+    .quantity-btn:hover {
+        background-color: #e9ecef;
     }
     
     .quantity-input {
-        width: 50px;
+        width: 70px;
         text-align: center;
         border: none;
-        border-left: 1px solid #ddd;
-        border-right: 1px solid #ddd;
-        padding: 0.8rem 0;
+        border-left: 2px solid #e9ecef;
+        border-right: 2px solid #e9ecef;
+        padding: 1rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    .add-to-cart-btn {
+        background: rgb(156, 19, 37);
+        color: white;
+        border: none;
+        padding: 1.2rem 2.5rem;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-grow: 1;
+    }
+    
+    .add-to-cart-btn:hover {
+        background: #a0152b;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(156, 19, 37, 0.3);
+    }
+    
+    .product-meta {
+        margin: 2rem 0;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+    
+    .meta-item i {
+        width: 25px;
+        color: rgb(156, 19, 37);
+        font-size: 1.2rem;
+    }
+    
+    .meta-item strong {
+        min-width: 120px;
     }
     
     .related-products {
         margin-top: 5rem;
+        padding-top: 3rem;
+        border-top: 2px solid #e9ecef;
     }
     
     .related-title {
-        font-size: 1.5rem;
-        margin-bottom: 2rem;
+        font-size: 1.8rem;
+        margin-bottom: 2.5rem;
         text-align: center;
+        color: #333;
+        font-weight: 700;
     }
     
-    @media (max-width: 992px) {
-        .product-container {
-            grid-template-columns: 1fr;
-        }
-        
-        .main-image {
-            height: 400px;
-        }
-    }
-    
-    @media (max-width: 576px) {
-        .product-gallery {
-            grid-template-columns: 1fr;
-        }
-        
-        .thumbnail-list {
-            flex-direction: row;
-            order: 2;
-        }
-        
-        .thumbnail {
-            height: 60px;
-            width: 60px;
-        }
-        
-        .main-image {
-            height: 300px;
-            order: 1;
-        }
-        
-        .product-title {
-            font-size: 1.5rem;
-        }
-        
-        .product-price {
-            font-size: 1.5rem;
-        }
-    }
-    /* Products */
     .products-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -153,41 +219,153 @@
     }
     
     .product-card {
-        background-color: var(--white);
-        border-radius: 10px;
+        background-color: white;
+        border-radius: 12px;
         overflow: hidden;
-        box-shadow: var(--box-shadow);
-        transition: var(--transition);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
     }
     
     .product-card:hover {
         transform: translateY(-10px);
-        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+    
+    .product-img-container {
+        height: 250px;
+        overflow: hidden;
     }
     
     .product-img {
         width: 100%;
-        height: 250px;
+        height: 100%;
         object-fit: cover;
+        transition: transform 0.5s ease;
     }
     
-    .product-info {
+    .product-card:hover .product-img {
+        transform: scale(1.1);
+    }
+    
+    .product-card-info {
         padding: 1.5rem;
     }
     
-    .product-title {
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
+    .product-card-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.8rem;
         font-weight: 600;
+        color: #333;
+        line-height: 1.4;
     }
     
-    .product-price {
+    .product-card-price {
         color: rgb(156, 19, 37);
         font-weight: 700;
-        font-size: 1.2rem;
-        margin-bottom: 1rem;
+        font-size: 1.3rem;
+        margin-bottom: 1.2rem;
     }
     
+    .product-card-btn {
+        background: rgb(156, 19, 37);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .product-card-btn:hover {
+        background: #a0152b;
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 992px) {
+        .product-container {
+            padding: 1.5rem;
+        }
+        
+        .main-image {
+            height: 400px;
+        }
+        
+        .product-title {
+            font-size: 1.8rem;
+        }
+        
+        .current-price, .regular-price {
+            font-size: 1.8rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .add-to-cart {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .quantity-selector {
+            justify-content: center;
+        }
+        
+        .product-description {
+            padding: 1.5rem;
+            font-size: 1.1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .product-detail {
+            padding: 1.5rem 0;
+        }
+        
+        .product-container {
+            padding: 1rem;
+            gap: 2rem;
+        }
+        
+        .main-image {
+            height: 300px;
+        }
+        
+        .product-title {
+            font-size: 1.5rem;
+        }
+        
+        .current-price, .regular-price {
+            font-size: 1.6rem;
+        }
+        
+        .price-row {
+            gap: 0.5rem;
+        }
+        
+        .original-price {
+            font-size: 1.1rem;
+        }
+        
+        .discount-badge {
+            font-size: 0.9rem;
+            padding: 0.3rem 0.8rem;
+        }
+        
+        .meta-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .meta-item strong {
+            min-width: auto;
+        }
+        
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -197,58 +375,68 @@
         <div class="product-container">
             <!-- Галерея товара -->
             <div class="product-gallery">
-                <div class="thumbnail-list">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="thumbnail active">
-                    <!-- Дополнительные изображения можно добавить здесь -->
+                <div class="main-image-container">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-image" id="mainImage">
                 </div>
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-image" id="mainImage">
             </div>
-            <div class="product-price">
-    {% if product.has_discount %}
-    <p><h2>{{product.name}}</h2></p>
-    <div class="price-container" style="font-size: 1.5rem;">
-        <span class="original-price" style="font-size: 1.2rem;">{{ product.price }} сом</span>
-        <span class="discount-price">{{ product.final_price }} сом</span>
-        <span class="discount-badge" style="position: static; font-size: 1rem;">
-            -{{ product.discount_percentage }}%
-        </span>
-    </div>
-    <p class="saving-badge" style="font-size: 1rem;">
-                       
-
-        Вы экономите {{ product.savings_amount|floatformat:0 }} сом
-    </p>
-    {% else %}
-    <p><h2>{{product.name}}</h2></p>
-    <span class="final-price" style="font-size: 1.8rem;">{{ product.price }} сом</span>
-    {% endif %}
-
+            
+            <!-- Информация о товаре -->
+            <div class="product-info">
+                <div class="product-price-section">
+                    {% if product.has_discount %}
+                        <h1 class="product-title">{{ product.name }}</h1>
+                        <div class="price-row">
+                            <span class="original-price">{{ product.price }} сом</span>
+                            <span class="discount-badge">-{{ product.discount_percentage }}%</span>
+                        </div>
+                        <div class="current-price">{{ product.final_price }} сом</div>
+                        <p class="savings">
+                            <i class="fas fa-piggy-bank"></i> Вы экономите {{ product.savings_amount|floatformat:0 }} сом
+                        </p>
+                    {% else %}
+                        <h1 class="product-title">{{ product.name }}</h1>
+                        <div class="regular-price">{{ product.price }} сом</div>
+                    {% endif %}
+                </div>
+                
                 <form method="post" action="{% url 'cart_operations' 'add' product.id %}" class="add-to-cart">
                     {% csrf_token %}
+                    <input type="hidden" name="model_type" value="product">
                     <div class="quantity-selector">
                         <button type="button" class="quantity-btn minus">-</button>
                         <input type="number" name="quantity" value="1" min="1" class="quantity-input">
                         <button type="button" class="quantity-btn plus">+</button>
                     </div>
-                    <button type="submit" style=" background: rgb(156, 19, 37)" class="btn">Добавить в корзину</button>
+                    <button type="submit" class="add-to-cart-btn">
+                        <i class="fas fa-shopping-cart"></i> Добавить в корзину
+                    </button>
                 </form>
                 
                 <div class="product-meta">
-                    <p><strong>Категория:</strong> 
-                         <a >
-                            {{ product.category.name }}
-                        </a> 
-                    </p>
-                    <p><strong>Доступность:</strong> 
+                    <div class="meta-item">
+                        <i class="fas fa-tag"></i>
+                        <strong>Категория:</strong>
+                        <span>{{ product.category.name }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-box"></i>
+                        <strong>Доступность:</strong>
                         {% if product.available %}
-                        <span style="color: green;">В наличии</span>
+                            <span style="color: green;">
+                                <i class="fas fa-check-circle"></i> В наличии
+                            </span>
                         {% else %}
-                        <span style="color: red;">Нет в наличии</span>
+                            <span style="color: red;">
+                                <i class="fas fa-times-circle"></i> Нет в наличии
+                            </span>
                         {% endif %}
-                    </p>
-</div>
-            <!-- Информация о товаре -->
-           <div><p>{{product.description}}</p></div>
+                    </div>
+                </div>
+                
+                <div class="product-description">
+                    {{ product.description }}
+                </div>
+            </div>
         </div>
         
         <!-- Похожие товары -->
@@ -262,10 +450,10 @@
                         <div class="product-img-container">
                             <img src="{{ related.image.url }}" alt="{{ related.name }}" class="product-img">
                         </div>
-                        <div class="product-info">
-                            <h3 class="product-title">{{ related.name }}</h3>
-                            <div class="product-price">{{ related.price }} сом</div>
-                            <button class="btn" style=" background: rgb(156, 19, 37)">Подробнее</button>
+                        <div class="product-card-info">
+                            <h3 class="product-card-title">{{ related.name }}</h3>
+                            <div class="product-card-price">{{ related.price }} сом</div>
+                            <button type="button" class="product-card-btn">Подробнее</button>
                         </div>
                     </a>
                 </div>
@@ -290,16 +478,17 @@
         input.value = parseInt(input.value) + 1;
     });
     
-    // Переключение изображений (можно добавить больше функционала при наличии дополнительных изображений)
-    const thumbnails = document.querySelectorAll('.thumbnail');
+    // Увеличение изображения при клике
     const mainImage = document.getElementById('mainImage');
+    mainImage.addEventListener('click', function() {
+        this.classList.toggle('zoomed');
+    });
     
-    thumbnails.forEach(thumb => {
-        thumb.addEventListener('click', function() {
-            thumbnails.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            mainImage.src = this.src;
-        });
+    // Сброс масштаба при клике вне изображения
+    document.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('main-image')) {
+            mainImage.classList.remove('zoomed');
+        }
     });
 </script>
 {% endblock %}
